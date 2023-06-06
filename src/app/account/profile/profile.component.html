@@ -23,12 +23,17 @@
                 <input type="text" matInput formControlName="displayName" placeholder="Display Name" />
             </mat-form-field>
             <mat-form-field appearance="standard">
-                <input type="number" matInput formControlName="phone" placeholder="Phone" />
+                <input type="tel" matInput formControlName="phone" placeholder="Phone" />
             </mat-form-field>
         </div>
 
-        <button type="submit" class="margin-top" mat-raised-button color="primary">
-            Save
-        </button>
+        <div class="cta-div margin-top">
+            <button type="submit" mat-raised-button color="primary">
+                Save
+            </button>
+            <button type="button" mat-raised-button color="accent" routerLink="/home">
+                Cancel
+            </button>
+        </div>
     </form>
 </div>

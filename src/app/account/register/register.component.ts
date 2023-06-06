@@ -3,6 +3,8 @@ import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn,
 import { emailRegx, nameRegx, passRegx } from 'src/app/regex-rules/regex';
 import { AuthenticationService } from '../authentication.service';
 import { Router } from '@angular/router';
+import { UserService } from '../user.service';
+import { switchMap } from 'rxjs/operators';
 
 export function passwordMatchValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -33,6 +35,7 @@ export class RegisterComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthenticationService,
+    private userService: UserService,
     private router: Router
   ) { }
 
@@ -56,17 +59,14 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit() {
-    // if (!this.registerForm.valid) {
-    //   return;
-    // }
-
     const { email, password, name } = this.registerForm.value;
-
     this.authService
-      .signUp(email, password).subscribe(() => {
+      .signUp(email, password).pipe(
+        switchMap(({ user: { uid } }) => this.userService.addUser({ uid, email, displayName: name })
+        ))
+      .subscribe(() => {
         this.router.navigate(['home'])
-      }
-      )
+      })
   }
 
 }

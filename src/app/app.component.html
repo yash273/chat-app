@@ -4,14 +4,14 @@
     <span class="nav-title">Conversa</span>
 
     <span class="example-spacer"></span>
-    <ng-container *ngIf="authService.currentUser$ | async as user;">
+    <ng-container *ngIf="user$ | async as user;">
         <button mat-flat-button color="primary" [matMenuTriggerFor]="userMenu">
             <img class="nav-profile-image" width="40" height="40" alt="" [src]="user.photoURL || '/assets/profile-placeholder.jpg'">
-            {{user.email}}
+            {{user.displayName}}
             <mat-icon>expand_more</mat-icon>
         </button>
     </ng-container>
-    <ng-container *ngIf="!(authService.currentUser$ | async)">
+    <ng-container *ngIf="!(user$ | async)">
         <button mat-flat-button routerLink="login" color="primary">
             <mat-icon>login</mat-icon>
             Login

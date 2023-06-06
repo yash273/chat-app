@@ -3,6 +3,7 @@ import { AuthenticationService } from './account/authentication.service';
 import { Router } from '@angular/router';
 import { NgIfContext } from '@angular/common';
 import { User } from 'firebase/auth';
+import { UserService } from './account/user.service';
 
 @Component({
   selector: 'app-root',
@@ -11,10 +12,11 @@ import { User } from 'firebase/auth';
 })
 export class AppComponent {
 
-  @ViewChild('loginButton') loginButton!: TemplateRef<NgIfContext<User | null>>;
+  user$ = this.userService.currentUserProfile$
 
   constructor(
-    public authService: AuthenticationService,
+    private authService: AuthenticationService,
+    private userService: UserService,
     private router: Router
   ) { }
 

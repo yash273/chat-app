@@ -28,7 +28,7 @@ const routes: Routes = [
   {
     path: 'register',
     component: RegisterComponent,
-    ...canActivate(redirectToHome)
+    // ...canActivate(redirectToHome)
   },
   {
     path: 'home',

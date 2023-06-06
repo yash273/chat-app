@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
+import { Firestore, doc, docData, setDoc, updateDoc } from '@angular/fire/firestore';
 import { Storage, getDownloadURL, ref, uploadBytes } from '@angular/fire/storage';
-import { Observable, from } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { userProfile } from '../interfaces/user';
+import { AuthenticationService } from './authentication.service';
 
 
 @Injectable({
@@ -9,8 +12,24 @@ import { switchMap } from 'rxjs/operators';
 })
 export class UserService {
 
+  get currentUserProfile$(): Observable<userProfile | null> {
+    return this.authService.currentUser$.pipe(
+      switchMap(user => {
+
+        if (!user?.uid) {
+          return of(null);
+        }
+
+        const ref = doc(this.fireStore, 'users', user?.uid)
+        return docData(ref) as Observable<userProfile>
+      })
+    )
+  }
+
   constructor(
-    private storage: Storage
+    private storage: Storage,
+    private fireStore: Firestore,
+    private authService: AuthenticationService
   ) { }
 
   uploadImage(image: File, path: string): Observable<string> {
@@ -20,4 +39,15 @@ export class UserService {
       switchMap((res) => getDownloadURL(res.ref))
     );
   }
+
+  addUser(user: userProfile): Observable<any> {
+    const ref = doc(this.fireStore, 'users', user?.uid)
+    return from(setDoc(ref, user))
+  }
+
+  updateUser(user: userProfile): Observable<any> {
+    const ref = doc(this.fireStore, 'users', user?.uid)
+    return from(updateDoc(ref, { ...user }))
+  }
+
 }

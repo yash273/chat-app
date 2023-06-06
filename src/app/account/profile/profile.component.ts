@@ -4,6 +4,8 @@ import { User } from 'firebase/auth';
 import { UserService } from '../user.service';
 import { concatMap } from 'rxjs/operators';
 import { FormBuilder } from '@angular/forms';
+import { userProfile } from 'src/app/interfaces/user';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -13,7 +15,7 @@ import { FormBuilder } from '@angular/forms';
 })
 export class ProfileComponent implements OnInit {
 
-  user$ = this.authService.currentUser$;
+  user$ = this.userService.currentUserProfile$;
 
   profileForm = this.formBuilder.group({
     uid: [''],
@@ -24,23 +26,31 @@ export class ProfileComponent implements OnInit {
   });
 
   constructor(
-    private authService: AuthenticationService,
     private userService: UserService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
+    this.userService.currentUserProfile$.subscribe((user) => {
+      this.profileForm.patchValue({ ...user })
+    })
   }
 
-  uploadImage(event: any, user: User) {
+  uploadImage(event: any, user: userProfile) {
     this.userService.uploadImage(event.target.files[0], `images/profile/${user.uid}`)
       .pipe(
-        concatMap((photoURL) => this.authService.updateProfileData({ photoURL }))
+        concatMap((photoURL) => this.userService.updateUser({ uid: user?.uid, photoURL }))
       ).subscribe();
   }
 
   saveProfile() {
-
+    const profileData = this.profileForm.value;
+    this.userService.updateUser(profileData)
+      .subscribe(() => {
+        this.router.navigate(['home'])
+      }
+      )
   }
 
 }
