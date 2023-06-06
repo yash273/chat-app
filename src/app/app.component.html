@@ -1,1 +1,21 @@
+<mat-toolbar color="primary" class="mat-elevation-z5">
+
+    <img class="brand-logo" src="../../../assets/Conversa.svg" alt="">
+    <span class="nav-title">Conversa</span>
+
+    <span class="example-spacer"></span>
+    <ng-container *ngIf="authService.currentUser$ | async as user;">
+        <button mat-flat-button (click)="logout()" color="primary">
+            <mat-icon>logout</mat-icon>
+            Logout
+        </button>
+    </ng-container>
+    <ng-container *ngIf="!(authService.currentUser$ | async)">
+        <button mat-flat-button routerLink="login" color="primary">
+            <mat-icon>login</mat-icon>
+            Login
+        </button>
+    </ng-container>
+
+</mat-toolbar>
 <router-outlet></router-outlet>

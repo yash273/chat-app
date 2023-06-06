@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "conversa-d37a4": {
+      "hosting": {
+        "chat-app": [
+          "conversa-d37a4"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "conversa-d37a4"
+  }
+}

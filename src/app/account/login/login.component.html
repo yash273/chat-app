@@ -1,29 +1,23 @@
-<div>
-    <mat-toolbar color="primary" class="mat-elevation-z5">
-        <img class="brand-logo" src="../../../assets/Conversa.svg" alt="">
-        <span class="nav-title">Conversa</span>
-        <span class="example-spacer"></span>
-        <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
-            <mat-icon>login</mat-icon>
-        </button>
-    </mat-toolbar>
-    <div class="below-container">
-        <div class="form-container mat-elevation-z6">
-            <form>
-                <h1>Sign in </h1>
-                <mat-form-field appearance="standard">
-                    <input matInput placeholder="Email">
-                </mat-form-field>
-                <mat-form-field appearance="standard">
-                    <input matInput placeholder="Password" [type]="hide ? 'password' : 'text'">
-                    <button type="button" mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
-                        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-                    </button>
-                </mat-form-field>
-                <div class="form-text">
-                    <p>New to Conversa? <a routerLink="/register">Sign Up!</a></p>
-                </div>
-            </form>
-        </div>
+<div class="below-container">
+    <div class="form-container mat-elevation-z6">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <h1>Sign in </h1>
+            <mat-form-field appearance="standard">
+                <input matInput placeholder="Email" formControlName="email">
+                <mat-error *ngIf="loginform.email.errors?.required">This is required field</mat-error>
+                <mat-error *ngIf="loginform.email.errors?.pattern">Enter Valid Input</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="standard">
+                <input matInput placeholder="Password" [type]="hide ? 'password' : 'text'" formControlName="password">
+                <button type="button" mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                    <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+                <mat-error *ngIf="loginform.password.errors?.required">This is required field</mat-error>
+            </mat-form-field>
+            <button mat-raised-button type="submit" color="primary" class="submit-btn">Submit</button>
+            <div class="form-text">
+                <p>New to Conversa? <a routerLink="/register">Sign Up!</a></p>
+            </div>
+        </form>
     </div>
 </div>
