@@ -56,14 +56,14 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit() {
-    if (!this.registerForm.valid) {
-      return;
-    }
+    // if (!this.registerForm.valid) {
+    //   return;
+    // }
 
     const { email, password, name } = this.registerForm.value;
 
     this.authService
-      .signUp(email, password, name).subscribe(() => {
+      .signUp(email, password).subscribe(() => {
         this.router.navigate(['home'])
       }
       )

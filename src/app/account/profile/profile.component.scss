@@ -1,0 +1,6 @@
+.profile-image {position: relative;width: 120px;margin: auto;}
+.profile-image > img {border-radius: 100%;object-fit: cover;object-position: center;}
+.profile-image > button {position: absolute;bottom: 4px;right: -24px;}  
+.form-container {max-width: 400px;  }
+.row {display: flex;gap: 16px;  }
+.profile-form{margin-top: 20px;}
