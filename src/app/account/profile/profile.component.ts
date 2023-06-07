@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from '../authentication.service';
-import { User } from 'firebase/auth';
 import { UserService } from '../user.service';
 import { concatMap } from 'rxjs/operators';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { userProfile } from 'src/app/interfaces/user';
 import { Router } from '@angular/router';
 

@@ -21,6 +21,8 @@
         <div class="row">
             <mat-form-field appearance="standard">
                 <input type="text" matInput formControlName="displayName" placeholder="Display Name" />
+                <!-- <mat-error *ngIf="profileForm.displayName.errors?.required">This should not be empty</mat-error> -->
+                <!-- <mat-error *ngIf="profileForm.get('.displayName')?.errors?.required">This should not be empty</mat-error> -->
             </mat-form-field>
             <mat-form-field appearance="standard">
                 <input type="tel" matInput formControlName="phone" placeholder="Phone" />
