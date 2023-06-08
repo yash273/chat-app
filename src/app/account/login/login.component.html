@@ -13,6 +13,7 @@
                     <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
                 </button>
                 <mat-error *ngIf="loginform.password.errors?.required">This is required field</mat-error>
+                <mat-error *ngIf="loginform.password.errors?.pattern">Enter Valid Input</mat-error>
             </mat-form-field>
             <button mat-raised-button type="submit" color="primary" class="submit-btn">Submit</button>
             <div class="form-text">

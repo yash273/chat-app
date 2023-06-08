@@ -60,11 +60,10 @@ export class ChatService {
     return chats
   }
 
-  createMessages$(chatId: string, message: string): Observable<any> {
+  createMessages(chatId: string, message: string): Observable<any> {
     const ref = collection(this.fireStore, 'chats', chatId, 'messages');
     const chatRef = doc(this.fireStore, 'chats', chatId);
     const sentDate = Timestamp.fromDate(new Date())
-    // debugger
     return this.userService.currentUserProfile$.pipe(
       take(1),
       concatMap((user) => addDoc(ref, {
@@ -79,10 +78,23 @@ export class ChatService {
     )
   }
 
-  getChatMessages$(chatId: string): Observable<Message[]> {
+  getChatMessages(chatId: string): Observable<Message[]> {
     const ref = collection(this.fireStore, 'chats', chatId, 'messages');
     const queryAll = query(ref, orderBy('sentDate', 'asc'));
-    // debugger
     return collectionData(queryAll) as Observable<Message[]>
+  }
+
+  isThereChat(chatUserId: string): Observable<string | null> {
+    return this.myChat$.pipe(
+      take(1),
+      map(chats => {
+        for (let i = 0; i < chats.length; i++) {
+          if (chats[i].userIds.includes(chatUserId)) {
+            return chats[i].id
+          }
+        }
+        return null
+      })
+    )
   }
 }

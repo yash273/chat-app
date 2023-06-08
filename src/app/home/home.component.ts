@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UserService } from '../account/user.service';
 import { FormControl } from '@angular/forms';
-import { combineLatest } from 'rxjs';
+import { combineLatest, of } from 'rxjs';
 import { map, startWith, switchMap, tap } from 'rxjs/operators';
 import { userProfile } from '../interfaces/user';
 import { ChatService } from './chat.service';
@@ -17,6 +17,9 @@ export class HomeComponent implements OnInit {
   searchControl = new FormControl('');
   chatListControl = new FormControl('');
   messageControl = new FormControl('');
+
+
+  @ViewChild('endOfChat') endOfChat!: ElementRef;
 
   user$ = this.userService.currentUserProfile$;
 
@@ -37,7 +40,10 @@ export class HomeComponent implements OnInit {
 
   messages$ = this.chatListControl.valueChanges.pipe(
     map(value => value[0]),
-    switchMap(chatId => this.chatService.getChatMessages$(chatId))
+    switchMap(chatId => this.chatService.getChatMessages(chatId)),
+    tap(() => {
+      this.scrollingToBottom()
+    })
   )
 
   constructor(
@@ -49,17 +55,35 @@ export class HomeComponent implements OnInit {
   }
 
   createChat(chatUser: userProfile) {
-    this.chatService.createChat(chatUser).subscribe();
+    this.chatService.isThereChat(chatUser.uid).pipe(
+      switchMap(chatId => {
+        if (chatId) {
+          return of(chatId);
+        } else {
+          return this.chatService.createChat(chatUser)
+        }
+      })
+    ).subscribe(chatId => {
+      this.chatListControl.setValue([chatId])
+    })
   }
 
   sendMessage() {
     const message = this.messageControl.value;
     const selectedChatId = this.chatListControl.value[0];
-    // debugger
     if (message && selectedChatId) {
-      this.chatService.createMessages$(selectedChatId, message).subscribe()
+      this.chatService.createMessages(selectedChatId, message).subscribe(() => {
+        this.scrollingToBottom();
+      })
       this.messageControl.setValue('');
     }
   }
 
+  scrollingToBottom() {
+    setTimeout(() => {
+      if (this.endOfChat) {
+        this.endOfChat.nativeElement.scrollIntoView({ behavior: 'smooth' })
+      }
+    }, 100)
+  }
 }

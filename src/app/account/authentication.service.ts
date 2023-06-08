@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
   Auth,
-  UserCredential,
   authState,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -22,7 +21,7 @@ export class AuthenticationService {
     private auth: Auth
   ) { }
 
-  login(username: string, password: string): Observable<UserCredential> {
+  login(username: string, password: string) {
     return from(signInWithEmailAndPassword(this.auth, username, password))
   }
 
@@ -30,7 +29,7 @@ export class AuthenticationService {
     return from(this.auth.signOut())
   }
 
-  signUp(email: string, password: string): Observable<any> {
+  signUp(email: string, password: string) {
     return from(createUserWithEmailAndPassword(this.auth, email, password))
   }
 }

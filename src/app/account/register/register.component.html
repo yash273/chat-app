@@ -20,14 +20,6 @@
                 <mat-error *ngIf="registerform.password.errors?.required">This is required field</mat-error>
                 <mat-error *ngIf="registerform.password.errors?.pattern">Enter Valid Input</mat-error>
             </mat-form-field>
-            <!-- <mat-form-field appearance="standard">
-                <input matInput placeholder="Confirm Password" [type]="hideConf ? 'password' : 'text'" formControlName="confirmPassword">
-                <button type="button" mat-icon-button matSuffix (click)="hideConf = !hideConf">
-                    <mat-icon>{{hideConf ? 'visibility_off' : 'visibility'}}</mat-icon>
-                </button>
-                <mat-error *ngIf="registerform.confirmPassword.errors?.required">This is required field</mat-error>
-            </mat-form-field>
-            <mat-error *ngIf="registerForm.errors?.['passwordsDontMatch']"> Password Does not match</mat-error> -->
             <button mat-raised-button type="submit" color="primary" class="submit-btn">Submit</button>
 
             <div class="form-text">

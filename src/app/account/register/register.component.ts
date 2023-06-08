@@ -6,20 +6,6 @@ import { Router } from '@angular/router';
 import { UserService } from '../user.service';
 import { switchMap } from 'rxjs/operators';
 
-export function passwordMatchValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const password = control.get('password')?.value
-    const confirmPassword = control.get('confirmPassword')?.value
-
-    if (password && confirmPassword && password !== confirmPassword) {
-      return {
-        passwordsDontMatch: true
-      }
-    }
-    return null;
-  }
-}
-
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -29,7 +15,6 @@ export function passwordMatchValidator(): ValidatorFn {
 export class RegisterComponent implements OnInit {
 
   hide = true;
-  hideConf = true;
   registerForm!: FormGroup
 
   constructor(
@@ -47,11 +32,8 @@ export class RegisterComponent implements OnInit {
     return this.registerForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.pattern(nameRegx)]],
       email: ['', [Validators.required, Validators.pattern(emailRegx)]],
-      password: ['', [Validators.required, Validators.pattern(passRegx)]],
-      confirmPassword: ['', [Validators.required]],
-    },
-      { Validators: passwordMatchValidator() }
-    )
+      password: ['', [Validators.required, Validators.pattern(passRegx)]]
+    })
   }
 
   get registerform() {

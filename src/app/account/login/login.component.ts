@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { emailRegx } from 'src/app/regex-rules/regex';
+import { emailRegx, passRegx } from 'src/app/regex-rules/regex';
 import { AuthenticationService } from '../authentication.service';
 import { Router } from '@angular/router';
 
@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
   createLogin(): FormGroup {
     return this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.pattern(emailRegx)]],
-      password: ['', [Validators.required]]
+      password: ['', [Validators.required, Validators.pattern(passRegx)]]
     })
   }
 

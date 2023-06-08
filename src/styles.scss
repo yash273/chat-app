@@ -2,25 +2,16 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-.below-container{background-color: rgb(242, 243, 243);display: flex;height: 100vh;flex-direction: column;align-items: center;}
+.below-container{background-color: #f6f3fb;display: flex;height:calc( 100vh - 80px);flex-direction: column;align-items: center;}
 .brand-logo{width: 60px;height: 60px;}
 .mat-toolbar.mat-primary{height: 80px;}
 .example-spacer {flex: 1 1 auto;  }
 .nav-title{margin-left: 20px;}
 .form-text{text-align: center;margin: 20px auto 0;}
-.form-container {
-    display: block;
-    max-width: 300px;
-    margin: auto;
-  
-    background: #eceff1;
-    padding: 48px;
-    border-radius: 16px;
-  
-    mat-form-field {
-      width: 100%;
-    }
-  }
-  .text-center {
-    text-align: center;
-  }
+.form-container {display: block;max-width: 300px;margin: auto;background: #F0EBF8;padding: 48px;border-radius: 16px;
+  mat-form-field {width: 100%;}
+}
+.text-center {text-align: center;}
+.mat-form-field-appearance-fill .mat-form-field-flex {
+  background-color: #F0EBF8;
+}

@@ -1,8 +1,6 @@
 import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { AuthenticationService } from './account/authentication.service';
 import { Router } from '@angular/router';
-import { NgIfContext } from '@angular/common';
-import { User } from 'firebase/auth';
 import { UserService } from './account/user.service';
 
 @Component({
@@ -25,4 +23,5 @@ export class AppComponent {
       this.router.navigate([''])
     })
   }
+
 }

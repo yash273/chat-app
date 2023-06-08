@@ -1,4 +1,5 @@
 <div class="chat-container">
+
     <div class="chat-list mat-elevation-z5">
         <div class="search-input">
             <mat-form-field appearance="fill">
@@ -19,34 +20,58 @@
                         {{chat.chatName}}
                     </span>
                     <span class="chat-date">
-                        {{chat.lastMessageDate}}
+                        {{chat.lastMessageDate | dateDisplay}}
                     </span>
                 </p>
                 <p mat-line>
                     {{chat.lastMessage}}
                 </p>
                 <mat-divider></mat-divider>
-
             </mat-list-option>
         </mat-selection-list>
     </div>
     <div class="messages-section mat-elevation-z5">
-        <div class="messages-header" *ngIf="selectedChat$ | async as selectedChat; else noMessages">
+
+        <div class="messages-header" *ngIf="selectedChat$ | async as selectedChat; else noMessages;">
             <img [src]="selectedChat.chatPic? selectedChat.chatPic: '/assets/profile-placeholder.jpg'">
             <h2>{{ selectedChat.chatName }}</h2>
         </div>
+
         <mat-divider></mat-divider>
+
         <ng-template #noMessages>
             <div class="messages-header">
-                Messages
+                <h2>Select User to start Conversation</h2>
             </div>
         </ng-template>
+
         <div class="chat-area">
-            <div *ngFor="let message of messages$ | async">
-                {{message.text}}
-            </div>
+            <ng-container *ngIf="user$ | async as currentUser">
+                <div *ngFor="let message of messages$ | async" class="message-container" [ngClass]="{'sender' : message.senderId === currentUser.uid}">
+                    <div class="message-bubble">
+                        {{message.text}}
+                        <span class="chat-date">
+                            {{message.sentDate | dateDisplay}}
+                        </span>
+                    </div>
+                </div>
+                <div #endOfChat></div>
+            </ng-container>
         </div>
-        <div class="input-area">
+
+        <ng-template #noInput>
+            <div class="chat-area no-message">
+                <div class="inner-about">
+                    <img class="no-message-image" src="../../../assets/Conversa.svg" alt="">
+                    <span>
+                        <h1>Conversea</h1>
+                        <h3>Chat app with Firebase</h3>
+                    </span>
+                </div>
+            </div>
+        </ng-template>
+
+        <div class="input-area" *ngIf="selectedChat$ | async as selectedChat; else noInput">
             <mat-form-field appearance="outline">
                 <input matInput placeholder="Enter Your message.." [formControl]="messageControl" (keydown.enter)="sendMessage()">
                 <button mat-icon-button matSuffix (click)="sendMessage()">
@@ -54,4 +79,5 @@
                 </button>
             </mat-form-field>
         </div>
+
     </div>

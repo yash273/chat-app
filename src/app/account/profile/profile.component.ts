@@ -17,7 +17,7 @@ export class ProfileComponent implements OnInit {
 
   profileForm = this.formBuilder.group({
     uid: [''],
-    displayName: [''],
+    displayName: ['', [Validators.required]],
     firstName: [''],
     lastName: [''],
     phone: [''],
@@ -35,6 +35,10 @@ export class ProfileComponent implements OnInit {
     })
   }
 
+  get profileform() {
+    return this.profileForm.controls;
+  }
+
   uploadImage(event: any, user: userProfile) {
     this.userService.uploadImage(event.target.files[0], `images/profile/${user.uid}`)
       .pipe(
@@ -43,12 +47,16 @@ export class ProfileComponent implements OnInit {
   }
 
   saveProfile() {
-    const profileData = this.profileForm.value;
-    this.userService.updateUser(profileData)
-      .subscribe(() => {
-        this.router.navigate(['home'])
-      }
-      )
+    if (this.profileForm.valid) {
+      const profileData = this.profileForm.value;
+      this.userService.updateUser(profileData)
+        .subscribe(() => {
+          this.router.navigate(['home'])
+        }
+        )
+    } else {
+      return
+    }
   }
 
 }
