@@ -4,6 +4,7 @@ import { concatMap } from 'rxjs/operators';
 import { FormBuilder, Validators } from '@angular/forms';
 import { userProfile } from 'src/app/interfaces/user';
 import { Router } from '@angular/router';
+import { AlertService } from 'src/app/alert/alert.service';
 
 
 @Component({
@@ -22,11 +23,13 @@ export class ProfileComponent implements OnInit {
     lastName: [''],
     phone: [''],
   });
+  loading!: boolean;
 
   constructor(
     private userService: UserService,
     private formBuilder: FormBuilder,
-    private router: Router
+    private router: Router,
+    private alert: AlertService
   ) { }
 
   ngOnInit(): void {
@@ -40,22 +43,44 @@ export class ProfileComponent implements OnInit {
   }
 
   uploadImage(event: any, user: userProfile) {
+    this.loading = true;
+    if (this.loading = true) {
+      this.alert.showAlert("Loading... Please wait", "default")
+    }
     this.userService.uploadImage(event.target.files[0], `images/profile/${user.uid}`)
       .pipe(
         concatMap((photoURL) => this.userService.updateUser({ uid: user?.uid, photoURL }))
-      ).subscribe();
+      ).subscribe(() => {
+        this.alert.showAlert("Image Updated", "success"),
+          this.loading = false
+      },
+        (error) => {
+          this.alert.showAlert(error, "error"),
+            this.loading = false
+        });
   }
 
   saveProfile() {
+    this.loading = true;
+    if (this.loading = true) {
+      this.alert.showAlert("Loading... Please wait", "default")
+    }
     if (this.profileForm.valid) {
       const profileData = this.profileForm.value;
       this.userService.updateUser(profileData)
         .subscribe(() => {
-          this.router.navigate(['home'])
-        }
+          this.router.navigate(['home']),
+            this.alert.showAlert("Profile Updated", "success"),
+            this.loading = false
+        },
+          (error) => {
+            this.alert.showAlert(error, "error"),
+              this.loading = false
+          },
         )
     } else {
-      return
+      return this.alert.showAlert("Please Fill Valid Data", "error")
+
     }
   }
 

@@ -14,12 +14,14 @@ import { HomeComponent } from './home/home.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DateDisplayPipe } from './pipes/date-display.pipe';
 import { DatePipe } from '@angular/common';
+import { AlertComponent } from './alert/alert.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    DateDisplayPipe
+    DateDisplayPipe,
+    AlertComponent
   ],
   imports: [
     BrowserModule,

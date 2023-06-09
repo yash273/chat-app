@@ -5,6 +5,7 @@ import { AuthenticationService } from '../authentication.service';
 import { Router } from '@angular/router';
 import { UserService } from '../user.service';
 import { switchMap } from 'rxjs/operators';
+import { AlertService } from 'src/app/alert/alert.service';
 
 @Component({
   selector: 'app-register',
@@ -16,12 +17,14 @@ export class RegisterComponent implements OnInit {
 
   hide = true;
   registerForm!: FormGroup
+  loading!: boolean;
 
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthenticationService,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private alert: AlertService
   ) { }
 
   ngOnInit(): void {
@@ -41,14 +44,28 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit() {
+    if (!this.registerForm.valid) {
+      return this.alert.showAlert("Please Fill Valid Data", "error")
+    }
+    this.loading = true;
+    if (this.loading = true) {
+      this.alert.showAlert("Loading... Please wait", "default")
+    }
     const { email, password, name } = this.registerForm.value;
     this.authService
       .signUp(email, password).pipe(
         switchMap(({ user: { uid } }) => this.userService.addUser({ uid, email, displayName: name })
         ))
       .subscribe(() => {
-        this.router.navigate(['home'])
-      })
+        this.router.navigate(['home']),
+          this.alert.showAlert("Registration Successfull", "success"),
+          this.loading = false
+      },
+        (error) => {
+          this.alert.showAlert(error, "error"),
+            this.loading = false
+        }
+      )
   }
 
 }
