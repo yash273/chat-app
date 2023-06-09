@@ -10,7 +10,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-
+// import { NgxEmojiPickerModule } from 'ngx-emoji-picker';
 const matModules = [
   MatButtonModule,
   MatToolbarModule,
@@ -21,17 +21,19 @@ const matModules = [
   MatAutocompleteModule,
   MatListModule,
   MatDividerModule,
-  MatSnackBarModule
+  MatSnackBarModule,
 ]
 
 @NgModule({
   declarations: [],
   imports: [
     CommonModule,
+
     matModules
   ],
   exports: [
-    matModules
+    matModules,
+
   ]
 })
 export class MaterialModule { }

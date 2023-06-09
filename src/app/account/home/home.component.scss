@@ -40,6 +40,7 @@ mat-list-base .mat-list-item .mat-list-avatar, .mat-list-base .mat-list-option .
 .messages-section .chat-area.no-message{display: block;position: absolute;top:200px;height: fit-content;
     .inner-about{ display: flex;align-items: center;justify-content: space-between;    }}
 .no-message-image{height: 350px;width: 350px;}
+emoji-picker{top:20px;left: 20px;}
 
 @media (max-width:991px) { 
 

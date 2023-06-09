@@ -23,8 +23,10 @@
     "@angular/router": "~12.2.0",
     "firebase": "^9.22.1",
     "firebase-tools": "^12.3.0",
+    "ngx-emoji-picker": "^0.1.6",
     "rxjs": "~6.6.0",
     "tslib": "^2.3.0",
+    "twemoji": "^14.0.2",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {

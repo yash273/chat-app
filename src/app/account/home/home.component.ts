@@ -19,7 +19,7 @@ export class HomeComponent implements OnInit {
   searchControl = new FormControl('');
   chatListControl = new FormControl('');
   messageControl = new FormControl('');
-
+  emojiClicked: boolean = false;
 
   @ViewChild('endOfChat') endOfChat!: ElementRef;
 
@@ -99,5 +99,11 @@ export class HomeComponent implements OnInit {
 
   chatClose() {
     this.chatService.chatClose()
+  }
+
+
+  handleSelection(event: { char: any; }) {
+    // console.log(event.char);
+    this.messageControl.setValue(this.messageControl.value + event.char);
   }
 }

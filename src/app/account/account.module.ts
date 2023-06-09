@@ -10,6 +10,8 @@ import { ProfileComponent } from './profile/profile.component'
 import { NavbarComponent } from '../components/navbar/navbar.component';
 import { HomeComponent } from './home/home.component';
 import { DateDisplayPipe } from '../pipes/date-display.pipe';
+import { NgxEmojiPickerModule } from 'ngx-emoji-picker';
+
 @NgModule({
   declarations: [
     LoginComponent,
@@ -24,7 +26,9 @@ import { DateDisplayPipe } from '../pipes/date-display.pipe';
     AccountRoutingModule,
     MaterialModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgxEmojiPickerModule,
+
   ],
   providers: [],
 })

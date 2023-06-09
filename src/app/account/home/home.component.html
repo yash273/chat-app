@@ -79,6 +79,10 @@
                 <button mat-icon-button matSuffix (click)="sendMessage()">
                     <mat-icon>send</mat-icon>
                 </button>
+                <button mat-icon-button matPrefix (click)="emojiClicked = !emojiClicked" [(emojiPickerIf)]="emojiClicked" [emojiPickerDirection]="'top'" (emojiPickerSelect)="handleSelection($event)">
+                    <mat-icon>emoji_emotions</mat-icon>
+                </button>
+
             </mat-form-field>
         </div>
 
