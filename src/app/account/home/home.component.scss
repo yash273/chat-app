@@ -1,5 +1,5 @@
 .chat-container{ display: flex; height: calc(100vh - 80px)}
-.messages-section{width: calc( 100% - 300px);margin: 16px;border-radius: 8px; background: #d8d4df;padding: 20px;
+.messages-section{transition: all 0.5s ease;width: calc( 100% - 300px);margin: 16px;border-radius: 8px; background: #d8d4df;padding: 20px;
     .messages-header {display: flex;margin-bottom: 8px;align-items:center;
         > img {border-radius: 50%;object-fit: cover;margin-right: 16px;height: 50px;width: 50px;box-shadow: 0px 0px 10px 0px #b39ddb;}
         > h2 {margin: 0;}
@@ -18,13 +18,14 @@
         }}
     .input-area {padding-top: 16px;padding-bottom: 8px;}
 }
-.chat-list{width: 300px;background: #b39ddb;
+.chat-list{width: 300px;background: #b39ddb;transition: all 0.5s ease;
     .chat-title {display: flex;justify-content: space-between;
         .chat-name {font-weight: 500;}
         .chat-date {font-size: 0.7rem;color: rgba(0,0,0,0.7)}
     }
     .search-input {margin: 24px;}
 }
+
 mat-form-field{width: 100%;}
 .mat-list-single-selected-option, .mat-list-single-selected-option:hover, .mat-list-single-selected-option:focus {
     background: #e1d8f1;
@@ -39,3 +40,19 @@ mat-list-base .mat-list-item .mat-list-avatar, .mat-list-base .mat-list-option .
 .messages-section .chat-area.no-message{display: block;position: absolute;top:200px;height: fit-content;
     .inner-about{ display: flex;align-items: center;justify-content: space-between;    }}
 .no-message-image{height: 350px;width: 350px;}
+
+@media (max-width:991px) { 
+
+    .chat-list{width: 300px; position: fixed;top:80px;z-index: 20;left: -300px;height:100vh;}
+    .messages-section{width: 100%;margin: 16px ;}
+    .chatClose{
+        .chat-list{width: 300px; position: fixed;top:80px;z-index: 20;left:0; }
+        .overlay{height: 100vh;background-color: rgba(0,0,0,0.3);display: block;position: fixed;z-index: 19;width: 100%;}
+    }
+}
+@media (max-width: 699px){
+    .no-message-image{width: 250px;height: 250px;}
+}
+@media (max-width: 499px){
+    .messages-section .chat-area.no-message .inner-about{flex-direction: column;}
+}

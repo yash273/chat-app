@@ -1,10 +1,12 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UserService } from '../account/user.service';
+import { UserService } from '../user.service';
 import { FormControl } from '@angular/forms';
 import { combineLatest, of } from 'rxjs';
 import { map, startWith, switchMap, tap } from 'rxjs/operators';
-import { userProfile } from '../interfaces/user';
+import { userProfile } from '../../interfaces/user';
 import { ChatService } from './chat.service';
+import { AuthenticationService } from '../authentication.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -48,7 +50,7 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private chatService: ChatService
+    private chatService: ChatService,
   ) { }
 
   ngOnInit(): void {
@@ -85,5 +87,17 @@ export class HomeComponent implements OnInit {
         this.endOfChat.nativeElement.scrollIntoView({ behavior: 'smooth' })
       }
     }, 100)
+  }
+
+  // isChatClosed: boolean = false;
+
+  // chatClose() {
+  //   if (window.innerWidth <= 991) {
+  //     this.isChatClosed = !this.isChatClosed;
+  //   }
+  // }
+
+  chatClose() {
+    this.chatService.chatClose()
   }
 }

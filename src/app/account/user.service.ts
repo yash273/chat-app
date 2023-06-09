@@ -33,7 +33,7 @@ export class UserService {
     private authService: AuthenticationService
   ) { }
 
-  uploadImage(image: File, path: string): Observable<string> {
+  uploadImagex(image: File, path: string): Observable<string> {
     const storageRef = ref(this.storage, path);
     const uploadWork = from(uploadBytes(storageRef, image));
     return uploadWork.pipe(

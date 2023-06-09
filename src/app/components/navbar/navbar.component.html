@@ -1,0 +1,32 @@
+<mat-menu #userMenu="matMenu">
+    <button mat-menu-item routerLink="/profile">My Profile</button>
+    <button mat-menu-item (click)="logout()">Logout</button>
+</mat-menu>
+
+<mat-toolbar color="primary" class="mat-elevation-z5">
+    <ng-container *ngIf="user$ | async ">
+        <button mat-icon-button color="accent" class="menu" (click)="chatClose()">
+            <mat-icon style="transform: rotate(180deg)">view_sidebar</mat-icon>
+        </button>
+    </ng-container>
+    <img class="brand-logo" src="../../../assets/Conversa.svg" alt="">
+    <span class="nav-title">Conversa</span>
+
+    <span class="example-spacer"></span>
+    <ng-container *ngIf="user$ | async as user; else noUser">
+        <button mat-flat-button color="primary" [matMenuTriggerFor]="userMenu">
+            <img class="nav-profile-image" width="40" height="40" alt="" [src]="user.photoURL || '/assets/profile-placeholder.jpg'" routerLink="/home">
+            {{user.displayName}}
+            <mat-icon>expand_more</mat-icon>
+        </button>
+    </ng-container>
+    <ng-template #noUser>
+
+        <button mat-flat-button routerLink="login" color="primary">
+            <mat-icon>login</mat-icon>
+            Login
+        </button>
+
+    </ng-template>
+
+</mat-toolbar>

@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Firestore, Timestamp, addDoc, collection, collectionData, doc, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
-import { userProfile } from '../interfaces/user';
+import { userProfile } from '../../interfaces/user';
 import { Observable } from 'rxjs';
-import { UserService } from '../account/user.service';
+import { UserService } from '../user.service';
 import { concatMap, map, take, tap } from 'rxjs/operators';
-import { Chat, Message } from '../interfaces/chat';
+import { Chat, Message } from '../../interfaces/chat';
 
 
 @Injectable({
@@ -96,5 +96,13 @@ export class ChatService {
         return null
       })
     )
+  }
+
+  chatClose() {
+    if (window.screen.width <= 991) {
+
+      const chatListClass = document.getElementsByClassName('chat-container')
+      chatListClass[0].classList.toggle('chatClose')
+    }
   }
 }

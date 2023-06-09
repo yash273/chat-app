@@ -6,8 +6,7 @@ import {
   signInWithEmailAndPassword,
 } from '@angular/fire/auth';
 import { FirebaseError } from 'firebase/app';
-// import { FirebaseError } from 'firebase/auth';
-import { Observable, from, of } from 'rxjs';
+import { from } from 'rxjs';
 import { AlertService } from '../alert/alert.service';
 
 
@@ -45,7 +44,7 @@ export class AuthenticationService {
     } if (error.code === 'auth/network-request-failed') {
       this.alert.showAlert("Network Error... Please check Connection", "error")
     } else {
-      // Handle other errors
+      this.alert.showAlert(error.code, "error")
     }
   };
 }

@@ -10,18 +10,6 @@ import { UserService } from './account/user.service';
 })
 export class AppComponent {
 
-  user$ = this.userService.currentUserProfile$
-
-  constructor(
-    private authService: AuthenticationService,
-    private userService: UserService,
-    private router: Router
-  ) { }
-
-  logout() {
-    this.authService.logout().subscribe(() => {
-      this.router.navigate([''])
-    })
-  }
+  constructor() { }
 
 }

@@ -17,6 +17,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 .success.mat-snack-bar-container{ background: #33d633; color: #e6fae6;}
 .error.mat-snack-bar-container{ background: #d11a1a; color: #fae6e6;}
+.default.mat-snack-bar-container{ background: #00ccff; color: #e6edfa;}
 snack-bar-container{
     app-alert{display: flex;
         align-items: center;
