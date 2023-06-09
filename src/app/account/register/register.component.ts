@@ -62,8 +62,8 @@ export class RegisterComponent implements OnInit {
           this.loading = false
       },
         (error) => {
-          this.alert.showAlert(error, "error"),
-            this.loading = false
+          this.authService.showError(error)
+          this.loading = false
         }
       )
   }

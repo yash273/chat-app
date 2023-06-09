@@ -22,7 +22,6 @@ export class LoginComponent implements OnInit {
     private formBuilder: FormBuilder,
     private authService: AuthenticationService,
     private router: Router,
-    private snackBar: MatSnackBar,
     private alert: AlertService
   ) { }
 
@@ -58,8 +57,8 @@ export class LoginComponent implements OnInit {
             this.loading = false
         },
         (error) => {
-          this.alert.showAlert(error, "error"),
-            this.loading = false
+          this.authService.showError(error)
+          this.loading = false
         },
 
       )
