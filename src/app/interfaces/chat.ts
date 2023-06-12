@@ -7,6 +7,7 @@ export interface Chat {
     users: userProfile[],
     lastMessage?: string,
     lastMessageDate?: Date & Timestamp,
+    lastMessageUserId: string
 
     chatPic?: string,
     chatName: string | undefined
