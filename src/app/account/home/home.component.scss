@@ -10,13 +10,13 @@
             &.sender{justify-content: flex-end;
                 .message-bubble{background: #b39ddb;border-radius: 12px 12px 0 12px;;
                     &:before{width: 12px;right: 0;left:unset;border-top-left-radius: unset;border-top-right-radius: 12px;box-shadow: 0 -12px 0 0 #b39ddb;}}}
-            .message-bubble{background: white;padding-top: 8px;padding-bottom: 18px;padding-left: 8px;padding-right: 80px;margin-bottom: 16px;
+            .message-bubble{background: white;padding-top: 8px;padding-bottom: 18px;padding-left: 8px;padding-right: 80px;margin-bottom: 16px;min-width: 60px;
                             border-radius: 12px 12px 12px 0;width: fit-content;position: relative;max-width: 60%;
                 &:before{content: "";position: absolute;background-color: transparent;bottom: -16px;height: 16px;width: 12px;left: 0;border-top-left-radius: 12px;box-shadow: 0 -12px 0 0 #ffffff;}
-                .chat-date{ position: absolute;bottom: 2px;right: 8px;font-size: 0.7rem;color: rgba(0,0,0,0.6);}
+                .chat-date{ position: absolute;display: flex;bottom: 2px;right: 8px;font-size: 0.7rem;color: rgba(0,0,0,0.6);}
             }
         }}
-    .input-area {padding-top: 16px;padding-bottom: 8px;}
+    .input-area {padding-top: 16px;padding-bottom: 8px;display: flex;align-items: baseline;}
 }
 .chat-list{width: 300px;background: #b39ddb;transition: all 0.5s ease;
     .chat-title {display: flex;justify-content: space-between;
@@ -40,8 +40,8 @@ mat-list-base .mat-list-item .mat-list-avatar, .mat-list-base .mat-list-option .
 .messages-section .chat-area.no-message{display: block;position: absolute;top:200px;height: fit-content;
     .inner-about{ display: flex;align-items: center;justify-content: space-between;    }}
 .no-message-image{height: 350px;width: 350px;}
-emoji-picker{top:20px;left: 20px;}
-
+.hidden-input {position: absolute;top: 0;left: 0;width: 40px;height: 40px;opacity: 0; }
+.message-image{width: 300px;}
 @media (max-width:991px) { 
 
     .chat-list{width: 300px; position: fixed;top:80px;z-index: 20;left: -300px;height:100vh;}

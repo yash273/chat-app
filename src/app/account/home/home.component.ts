@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UserService } from '../user.service';
 import { FormControl } from '@angular/forms';
 import { combineLatest, of } from 'rxjs';
@@ -7,6 +7,8 @@ import { userProfile } from '../../interfaces/user';
 import { ChatService } from './chat.service';
 import { AuthenticationService } from '../authentication.service';
 import { Router } from '@angular/router';
+import { Message } from 'src/app/interfaces/chat';
+
 
 
 @Component({
@@ -20,11 +22,14 @@ export class HomeComponent implements OnInit {
   chatListControl = new FormControl('');
   messageControl = new FormControl('');
   emojiClicked: boolean = false;
+  selectedImage!: File;
+
 
   @ViewChild('endOfChat') endOfChat!: ElementRef;
 
-  user$ = this.userService.currentUserProfile$;
 
+
+  user$ = this.userService.currentUserProfile$;
   myChat$ = this.chatService.myChat$;
 
   users$ = combineLatest([
@@ -73,8 +78,9 @@ export class HomeComponent implements OnInit {
   sendMessage() {
     const message = this.messageControl.value;
     const selectedChatId = this.chatListControl.value[0];
-    if (message && selectedChatId) {
-      this.chatService.createMessages(selectedChatId, message).subscribe(() => {
+    const imgURL = ''
+    if (message && selectedChatId || imgURL && selectedChatId) {
+      this.chatService.createMessages(selectedChatId, message, imgURL).subscribe(() => {
         this.scrollingToBottom();
       })
       this.messageControl.setValue('');
@@ -89,21 +95,39 @@ export class HomeComponent implements OnInit {
     }, 100)
   }
 
-  // isChatClosed: boolean = false;
-
-  // chatClose() {
-  //   if (window.innerWidth <= 991) {
-  //     this.isChatClosed = !this.isChatClosed;
-  //   }
-  // }
-
   chatClose() {
     this.chatService.chatClose()
   }
 
-
   handleSelection(event: { char: any; }) {
-    // console.log(event.char);
     this.messageControl.setValue(this.messageControl.value + event.char);
   }
+
+  onImageSelected(event: any): any {
+    const selectedImage = event.target.files[0];
+    const selectedChatId = this.chatListControl.value[0];
+    this.chatService.imageURL(selectedImage, selectedChatId).subscribe(
+      imageUrl => {
+        const message = '';
+        if (message && selectedChatId || imageUrl && selectedChatId) {
+          this.chatService.createMessages(selectedChatId, message, imageUrl).subscribe(() => {
+            this.scrollingToBottom();
+          });
+          this.messageControl.setValue('');
+        }
+      },
+      error => {
+        console.error(error);
+      }
+    );
+  }
+
+  markMessageAsSeen(message: Message) {
+    debugger
+    console.log(message)
+  }
+
+
+
+
 }

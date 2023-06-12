@@ -15,5 +15,7 @@ export interface Chat {
 export interface Message {
     text: string,
     senderId: string,
-    sentDate: Date & Timestamp
+    sentDate: Date & Timestamp,
+    imgURL: string,
+    status: 'seen' | 'unseen'
 }

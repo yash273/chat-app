@@ -27,6 +27,7 @@
                 </p>
                 <p mat-line>
                     {{chat.lastMessage}}
+
                 </p>
                 <mat-divider></mat-divider>
             </mat-list-option>
@@ -51,10 +52,24 @@
             <ng-container *ngIf="user$ | async as currentUser">
                 <div *ngFor="let message of messages$ | async" class="message-container" [ngClass]="{'sender' : message.senderId === currentUser.uid}">
                     <div class="message-bubble">
-                        {{message.text}}
+                        <ng-container *ngIf="message.imgURL === ''">
+                            {{message.text }}
+                        </ng-container>
+                        <ng-container *ngIf="message.text === ''">
+                            <a [href]="message.imgURL" target="_blank">
+                                <img class="message-image" [src]="message.imgURL" alt="msg-images">
+                            </a>
+                        </ng-container>
+
                         <span class="chat-date">
                             {{message.sentDate | dateDisplay}}
+                            <mat-icon>{{ message.status === 'seen' ? 'done_all' : 'done' }}</mat-icon>
+
                         </span>
+                        <!-- <mat-icon>{{ message.status === 'seen' ? 'done_all' : 'done' }}</mat-icon> -->
+
+
+
                     </div>
                 </div>
                 <div #endOfChat></div>
@@ -79,11 +94,15 @@
                 <button mat-icon-button matSuffix (click)="sendMessage()">
                     <mat-icon>send</mat-icon>
                 </button>
-                <button mat-icon-button matPrefix (click)="emojiClicked = !emojiClicked" [(emojiPickerIf)]="emojiClicked" [emojiPickerDirection]="'top'" (emojiPickerSelect)="handleSelection($event)">
+                <button class="hello" mat-icon-button matPrefix (click)="emojiClicked = !emojiClicked" [(emojiPickerIf)]="emojiClicked" [emojiPickerDirection]="'bottom'" (emojiPickerSelect)="handleSelection($event)">
                     <mat-icon>emoji_emotions</mat-icon>
                 </button>
-
             </mat-form-field>
+
+            <button mat-icon-button>
+                <mat-icon>image</mat-icon>
+                <input type="file" accept="image/*" class="hidden-input" (change)="onImageSelected($event)">
+            </button>
         </div>
 
     </div>

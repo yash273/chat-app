@@ -1,21 +1,24 @@
 import { Injectable } from '@angular/core';
-import { Firestore, Timestamp, addDoc, collection, collectionData, doc, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
+import { Firestore, Timestamp, addDoc, collection, collectionData, doc, getFirestore, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
 import { userProfile } from '../../interfaces/user';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
 import { UserService } from '../user.service';
-import { concatMap, map, take, tap } from 'rxjs/operators';
+import { concatMap, finalize, map, switchMap, take, tap } from 'rxjs/operators';
 import { Chat, Message } from '../../interfaces/chat';
+import { Storage, getDownloadURL, ref, uploadBytes } from '@angular/fire/storage';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService {
-
   constructor(
     private fireStore: Firestore,
-    private userService: UserService
-  ) { }
+    private userService: UserService,
+    private storage: Storage,
+  ) {
+
+  }
 
   createChat(chatUser: userProfile): Observable<string> {
     const ref = collection(this.fireStore, 'chats');
@@ -60,16 +63,19 @@ export class ChatService {
     return chats
   }
 
-  createMessages(chatId: string, message: string): Observable<any> {
+  createMessages(chatId: string, message: string, imgURL: string,): Observable<any> {
     const ref = collection(this.fireStore, 'chats', chatId, 'messages');
     const chatRef = doc(this.fireStore, 'chats', chatId);
-    const sentDate = Timestamp.fromDate(new Date())
+    const sentDate = Timestamp.fromDate(new Date());
+    const messageStatus = 'seen'
     return this.userService.currentUserProfile$.pipe(
       take(1),
       concatMap((user) => addDoc(ref, {
         text: message,
         senderId: user?.uid,
-        sentDate: sentDate
+        imgURL: imgURL,
+        sentDate: sentDate,
+        status: messageStatus
       })),
       concatMap(() => updateDoc(chatRef, {
         lastMessage: message,
@@ -100,9 +106,23 @@ export class ChatService {
 
   chatClose() {
     if (window.screen.width <= 991) {
-
       const chatListClass = document.getElementsByClassName('chat-container')
       chatListClass[0].classList.toggle('chatClose')
     }
   }
+
+  uploadImageToStorage(imageFile: File, selectedChatId: string): Observable<any> {
+    const imageName = Date.now() + "_" + imageFile.name;
+    const filePath = `chatImages/${selectedChatId}/${imageName}`;
+    const storageRef = ref(this.storage, filePath);
+    const uploadTask = from(uploadBytes(storageRef, imageFile));
+    return uploadTask.pipe(
+      switchMap((res) => getDownloadURL(res.ref))
+    )
+  }
+
+  imageURL(imageFile: File, selectedChatId: string) {
+    return this.uploadImageToStorage(imageFile, selectedChatId)
+  }
+
 }

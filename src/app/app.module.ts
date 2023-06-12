@@ -13,7 +13,6 @@ import { provideStorage, getStorage } from '@angular/fire/storage';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { AlertComponent } from './alert/alert.component';
-// import { NgxEmojiPickerModule } from 'ngx-emoji-picker';
 
 @NgModule({
   declarations: [
@@ -32,7 +31,7 @@ import { AlertComponent } from './alert/alert.component';
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     provideStorage(() => getStorage()),
-    // NgxEmojiPickerModule
+
   ],
   providers: [DatePipe],
   bootstrap: [AppComponent]
