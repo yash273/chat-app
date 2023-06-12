@@ -63,11 +63,12 @@ export class ChatService {
     return chats
   }
 
-  createMessages(chatId: string, message: string, imgURL: string,): Observable<any> {
+  createMessages(chatId: string, message: string, imgURL: string, lastMessageUserId: string): Observable<any> {
     const ref = collection(this.fireStore, 'chats', chatId, 'messages');
     const chatRef = doc(this.fireStore, 'chats', chatId);
     const sentDate = Timestamp.fromDate(new Date());
-    const messageStatus = 'seen'
+    // if(lastMessageUserId == )
+    const messageStatus = 'unseen'
     return this.userService.currentUserProfile$.pipe(
       take(1),
       concatMap((user) => addDoc(ref, {
@@ -79,7 +80,21 @@ export class ChatService {
       })),
       concatMap(() => updateDoc(chatRef, {
         lastMessage: message,
-        lastMessageDate: sentDate
+        lastMessageDate: sentDate,
+        lastMessageUserId: lastMessageUserId,
+      }))
+    )
+  }
+
+  lastmessageSeen(chatId: string) {
+    debugger
+    const chatRef = doc(this.fireStore, 'chats', chatId);
+    const today = Timestamp.fromDate(new Date());
+    return this.userService.currentUserProfile$.pipe(
+      take(1),
+      concatMap((user) => updateDoc(chatRef, {
+        lastMessageDate: today,
+        lastMessageUserId: user?.uid
       }))
     )
   }
@@ -121,7 +136,7 @@ export class ChatService {
     )
   }
 
-  imageURL(imageFile: File, selectedChatId: string) {
+  getImageURL(imageFile: File, selectedChatId: string) {
     return this.uploadImageToStorage(imageFile, selectedChatId)
   }
 

@@ -7,7 +7,7 @@ import { userProfile } from '../../interfaces/user';
 import { ChatService } from './chat.service';
 import { AuthenticationService } from '../authentication.service';
 import { Router } from '@angular/router';
-import { Message } from 'src/app/interfaces/chat';
+import { Chat, Message } from 'src/app/interfaces/chat';
 
 
 
@@ -52,6 +52,7 @@ export class HomeComponent implements OnInit {
       this.scrollingToBottom()
     })
   )
+  currentUser!: userProfile | null;
 
   constructor(
     private userService: UserService,
@@ -59,6 +60,8 @@ export class HomeComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.userService.currentUserProfile$.subscribe((res) => { this.currentUser = res });
+
   }
 
   createChat(chatUser: userProfile) {
@@ -78,12 +81,16 @@ export class HomeComponent implements OnInit {
   sendMessage() {
     const message = this.messageControl.value;
     const selectedChatId = this.chatListControl.value[0];
-    const imgURL = ''
-    if (message && selectedChatId || imgURL && selectedChatId) {
-      this.chatService.createMessages(selectedChatId, message, imgURL).subscribe(() => {
-        this.scrollingToBottom();
-      })
-      this.messageControl.setValue('');
+    const imgURL = '';
+    if (this.currentUser !== null) {
+      const lastUId = this.currentUser.uid
+      console.log(lastUId)
+      if (message && selectedChatId || imgURL && selectedChatId) {
+        this.chatService.createMessages(selectedChatId, message, imgURL, lastUId).subscribe(() => {
+          this.scrollingToBottom();
+        })
+        this.messageControl.setValue('');
+      }
     }
   }
 
@@ -106,28 +113,26 @@ export class HomeComponent implements OnInit {
   onImageSelected(event: any): any {
     const selectedImage = event.target.files[0];
     const selectedChatId = this.chatListControl.value[0];
-    this.chatService.imageURL(selectedImage, selectedChatId).subscribe(
+    this.chatService.getImageURL(selectedImage, selectedChatId).subscribe(
       imageUrl => {
         const message = '';
-        if (message && selectedChatId || imageUrl && selectedChatId) {
-          this.chatService.createMessages(selectedChatId, message, imageUrl).subscribe(() => {
-            this.scrollingToBottom();
-          });
-          this.messageControl.setValue('');
+        if (this.currentUser !== null) {
+
+          const lastUId = this.currentUser.uid;
+          console.log(lastUId)
+          if (message && selectedChatId || imageUrl && selectedChatId) {
+            this.chatService.createMessages(selectedChatId, message, imageUrl, lastUId).subscribe(() => {
+              this.scrollingToBottom();
+            });
+            this.messageControl.setValue('');
+          }
         }
       },
       error => {
         console.error(error);
       }
+
     );
   }
-
-  markMessageAsSeen(message: Message) {
-    debugger
-    console.log(message)
-  }
-
-
-
 
 }

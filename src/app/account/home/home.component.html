@@ -49,6 +49,7 @@
         </ng-template>
 
         <div class="chat-area">
+            <!-- <ng-container *ngIf="selectedChat$ | async as selectedChat;"> -->
             <ng-container *ngIf="user$ | async as currentUser">
                 <div *ngFor="let message of messages$ | async" class="message-container" [ngClass]="{'sender' : message.senderId === currentUser.uid}">
                     <div class="message-bubble">
@@ -62,18 +63,20 @@
                         </ng-container>
 
                         <span class="chat-date">
-                            {{message.sentDate | dateDisplay}}
-                            <mat-icon>{{ message.status === 'seen' ? 'done_all' : 'done' }}</mat-icon>
-
+                            {{message.sentDate | dateDisplay }}
+                            <ng-container *ngIf=" message.senderId === currentUser.uid">
+                                <mat-icon>{{ message.status === 'seen' ? 'done_all' : 'done' }}</mat-icon>
+                            </ng-container>
+                            <!-- <ng-container *ngIf="message.senderId === currentUser.uid">
+                                hello
+                            </ng-container> -->
                         </span>
-                        <!-- <mat-icon>{{ message.status === 'seen' ? 'done_all' : 'done' }}</mat-icon> -->
-
-
 
                     </div>
                 </div>
                 <div #endOfChat></div>
             </ng-container>
+            <!-- </ng-container> -->
         </div>
 
         <ng-template #noInput>
