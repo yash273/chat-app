@@ -13,10 +13,11 @@
             .message-bubble{background: white;padding-top: 8px;padding-bottom: 18px;padding-left: 8px;padding-right: 80px;margin-bottom: 16px;min-width: 60px;
                             border-radius: 12px 12px 12px 0;width: fit-content;position: relative;max-width: 60%;
                 &:before{content: "";position: absolute;background-color: transparent;bottom: -16px;height: 16px;width: 12px;left: 0;border-top-left-radius: 12px;box-shadow: 0 -12px 0 0 #ffffff;}
-                .chat-date{ position: absolute;display: flex;bottom: 2px;right: 8px;font-size: 0.7rem;color: rgba(0,0,0,0.6);}
+                .chat-date{ position: absolute;display: flex;align-items: center;bottom: 2px;right: 8px;font-size: 0.7rem;color: rgba(0,0,0,0.6);}
             }
         }}
-    .input-area {padding-top: 16px;padding-bottom: 8px;display: flex;align-items: baseline;}
+    .input-area {padding-top: 20px;padding-bottom: 8px;display: flex;align-items: baseline;position: relative;;
+    .chat-seen{position: absolute;top:2px}}
 }
 .chat-list{width: 300px;background: #b39ddb;transition: all 0.5s ease;
     .chat-title {display: flex;justify-content: space-between;

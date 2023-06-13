@@ -24,7 +24,6 @@ export class HomeComponent implements OnInit {
   emojiClicked: boolean = false;
   selectedImage!: File;
 
-
   @ViewChild('endOfChat') endOfChat!: ElementRef;
 
 
@@ -53,6 +52,7 @@ export class HomeComponent implements OnInit {
     })
   )
   currentUser!: userProfile | null;
+  // selectedChat!: Chat;
 
   constructor(
     private userService: UserService,
@@ -78,15 +78,13 @@ export class HomeComponent implements OnInit {
     })
   }
 
-  sendMessage() {
+  sendMessage(selectedChat: Chat) {
     const message = this.messageControl.value;
     const selectedChatId = this.chatListControl.value[0];
     const imgURL = '';
     if (this.currentUser !== null) {
-      const lastUId = this.currentUser.uid
-      console.log(lastUId)
       if (message && selectedChatId || imgURL && selectedChatId) {
-        this.chatService.createMessages(selectedChatId, message, imgURL, lastUId).subscribe(() => {
+        this.chatService.createMessages(selectedChatId, message, imgURL, this.currentUser, selectedChat).subscribe(() => {
           this.scrollingToBottom();
         })
         this.messageControl.setValue('');
@@ -110,18 +108,16 @@ export class HomeComponent implements OnInit {
     this.messageControl.setValue(this.messageControl.value + event.char);
   }
 
-  onImageSelected(event: any): any {
+  onImageSelected(event: any, selectedChat: Chat): any {
     const selectedImage = event.target.files[0];
     const selectedChatId = this.chatListControl.value[0];
+    this.chatService.lastSeenMessages(selectedChatId)
     this.chatService.getImageURL(selectedImage, selectedChatId).subscribe(
       imageUrl => {
         const message = '';
         if (this.currentUser !== null) {
-
-          const lastUId = this.currentUser.uid;
-          console.log(lastUId)
           if (message && selectedChatId || imageUrl && selectedChatId) {
-            this.chatService.createMessages(selectedChatId, message, imageUrl, lastUId).subscribe(() => {
+            this.chatService.createMessages(selectedChatId, message, imageUrl, this.currentUser, selectedChat).subscribe(() => {
               this.scrollingToBottom();
             });
             this.messageControl.setValue('');
@@ -133,6 +129,16 @@ export class HomeComponent implements OnInit {
       }
 
     );
+  }
+
+  lastSeenMessages(chatId: string) {
+    this.chatService.lastSeenMessages(chatId).subscribe();
+    this.chatClose();
+  }
+  isMessageSeen(message: Message): boolean {
+    // Implement your logic to determine if the message has been seen or not
+    // For example, you can compare the lastMessageUserId with the current user's ID
+    return message.senderId === this.currentUser?.uid;
   }
 
 }

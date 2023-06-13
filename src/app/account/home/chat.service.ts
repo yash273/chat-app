@@ -63,38 +63,77 @@ export class ChatService {
     return chats
   }
 
-  createMessages(chatId: string, message: string, imgURL: string, lastMessageUserId: string): Observable<any> {
+  createMessages(chatId: string, message: string, imgURL: string, currentUser: userProfile, selectedChat: Chat): Observable<any> {
     const ref = collection(this.fireStore, 'chats', chatId, 'messages');
     const chatRef = doc(this.fireStore, 'chats', chatId);
     const sentDate = Timestamp.fromDate(new Date());
-    // if(lastMessageUserId == )
-    const messageStatus = 'unseen'
+    debugger
+    let status = false;
+    if (
+      sentDate > selectedChat.lastMessageSeenAt &&
+      selectedChat.lastMessageSeenByUserId !== currentUser.uid
+      // selectedChat.lastMessageUserId === currentUser.uid
+
+      // && selectedChat.lastMessageDate < selectedChat.lastMessageSeenAt
+    ) {
+      status = true
+    }
+    if (
+      sentDate > selectedChat.lastMessageSeenAt &&
+      selectedChat.lastMessageSeenByUserId !== currentUser.uid &&
+      selectedChat.lastMessage === ''
+    ) {
+      status = false;
+      console.log(status)
+    }
+    // if (
+    //   sentDate > selectedChat.lastMessageSeenAt &&
+    //   selectedChat.lastMessageSeenByUserId === currentUser.uid
+    //   && (selectedChat.lastMessageUserId !== currentUser.uid)
+
+    // ) {
+    //   status = true
+    // }
+    // if (
+    //   sentDate > selectedChat.lastMessageSeenAt &&
+    //   selectedChat.lastMessageSeenByUserId !== currentUser.uid &&
+    //   selectedChat.lastMessageUserId === currentUser.uid
+    // ) {
+    //   status = true
+    // }
     return this.userService.currentUserProfile$.pipe(
       take(1),
-      concatMap((user) => addDoc(ref, {
-        text: message,
-        senderId: user?.uid,
-        imgURL: imgURL,
-        sentDate: sentDate,
-        status: messageStatus
-      })),
+      concatMap((user) =>
+
+        addDoc(ref, {
+          text: message,
+          senderId: user?.uid,
+          imgURL: imgURL,
+          sentDate: sentDate,
+          is_seen: status
+        })
+      ),
       concatMap(() => updateDoc(chatRef, {
         lastMessage: message,
         lastMessageDate: sentDate,
-        lastMessageUserId: lastMessageUserId,
+        lastMessageUserId: currentUser.uid,
+
       }))
     )
+
   }
 
-  lastmessageSeen(chatId: string) {
-    debugger
+  lastSeenMessages(chatId: string) {
     const chatRef = doc(this.fireStore, 'chats', chatId);
-    const today = Timestamp.fromDate(new Date());
+    const openedDate = Timestamp.fromDate(new Date());
+    // let x : true
     return this.userService.currentUserProfile$.pipe(
       take(1),
       concatMap((user) => updateDoc(chatRef, {
-        lastMessageDate: today,
-        lastMessageUserId: user?.uid
+        lastMessage: '',
+        lastMessageSeenAt: openedDate,
+        lastMessageSeenByUserId: user?.uid,
+        // is_chatOpen: x
       }))
     )
   }
@@ -123,6 +162,7 @@ export class ChatService {
     if (window.screen.width <= 991) {
       const chatListClass = document.getElementsByClassName('chat-container')
       chatListClass[0].classList.toggle('chatClose')
+
     }
   }
 

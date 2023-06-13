@@ -6,8 +6,11 @@ export interface Chat {
     userIds: string[],
     users: userProfile[],
     lastMessage?: string,
-    lastMessageDate?: Date & Timestamp,
-    lastMessageUserId: string
+    lastMessageDate: Date & Timestamp,
+    lastMessageUserId: string,
+    lastMessageSeenByUserId: string,
+    lastMessageSeenAt: Date & Timestamp,
+    // is_chatOpen: boolean
 
     chatPic?: string,
     chatName: string | undefined
@@ -18,5 +21,5 @@ export interface Message {
     senderId: string,
     sentDate: Date & Timestamp,
     imgURL: string,
-    status: 'seen' | 'unseen'
+    is_seen: boolean
 }
