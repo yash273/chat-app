@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, Timestamp, addDoc, collection, collectionData, doc, getFirestore, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
+import { DocumentData, DocumentReference, Firestore, Timestamp, addDoc, collection, collectionData, doc, getFirestore, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
 import { userProfile } from '../../interfaces/user';
 import { Observable, from } from 'rxjs';
 import { UserService } from '../user.service';
@@ -25,15 +25,18 @@ export class ChatService {
     return this.userService.currentUserProfile$.pipe(
       take(1),
       concatMap(user => addDoc(ref, {
+        is_chatOpen: false,
         userIds: [user?.uid, chatUser.uid],
         users: [
           {
             displayName: user?.displayName ?? '',
-            photoURL: user?.photoURL ?? ''
+            photoURL: user?.photoURL ?? '',
+            uid: user?.uid ?? ''
           },
           {
             displayName: chatUser?.displayName ?? '',
-            photoURL: chatUser?.photoURL ?? ''
+            photoURL: chatUser?.photoURL ?? '',
+            uid: chatUser?.uid ?? ''
           }
         ]
       })),
@@ -56,9 +59,10 @@ export class ChatService {
   addChatNameAndPic(currentUserId: string | undefined, chats: Chat[]): Chat[] {
     chats.forEach((chat: Chat) => {
       const chatUserIndex = chat.userIds.indexOf(currentUserId ?? '') === 0 ? 1 : 0;
-      const { displayName, photoURL } = chat.users[chatUserIndex];
+      const { displayName, photoURL, uid } = chat.users[chatUserIndex];
       chat.chatName = displayName;
       chat.chatPic = photoURL;
+      chat.chatUser = uid
     });
     return chats
   }
@@ -67,40 +71,11 @@ export class ChatService {
     const ref = collection(this.fireStore, 'chats', chatId, 'messages');
     const chatRef = doc(this.fireStore, 'chats', chatId);
     const sentDate = Timestamp.fromDate(new Date());
-    debugger
     let status = false;
-    if (
-      sentDate > selectedChat.lastMessageSeenAt &&
-      selectedChat.lastMessageSeenByUserId !== currentUser.uid
-      // selectedChat.lastMessageUserId === currentUser.uid
-
-      // && selectedChat.lastMessageDate < selectedChat.lastMessageSeenAt
-    ) {
-      status = true
+    if (selectedChat.is_chatOpen == true &&
+      selectedChat.chatOpenedBy === currentUser.uid) {
+      status = true;
     }
-    if (
-      sentDate > selectedChat.lastMessageSeenAt &&
-      selectedChat.lastMessageSeenByUserId !== currentUser.uid &&
-      selectedChat.lastMessage === ''
-    ) {
-      status = false;
-      console.log(status)
-    }
-    // if (
-    //   sentDate > selectedChat.lastMessageSeenAt &&
-    //   selectedChat.lastMessageSeenByUserId === currentUser.uid
-    //   && (selectedChat.lastMessageUserId !== currentUser.uid)
-
-    // ) {
-    //   status = true
-    // }
-    // if (
-    //   sentDate > selectedChat.lastMessageSeenAt &&
-    //   selectedChat.lastMessageSeenByUserId !== currentUser.uid &&
-    //   selectedChat.lastMessageUserId === currentUser.uid
-    // ) {
-    //   status = true
-    // }
     return this.userService.currentUserProfile$.pipe(
       take(1),
       concatMap((user) =>
@@ -117,24 +92,20 @@ export class ChatService {
         lastMessage: message,
         lastMessageDate: sentDate,
         lastMessageUserId: currentUser.uid,
-
       }))
     )
 
   }
 
-  lastSeenMessages(chatId: string) {
-    const chatRef = doc(this.fireStore, 'chats', chatId);
+  lastSeenMessages(selectedChat: Chat, ChatId: string) {
+    const chatRef = doc(this.fireStore, 'chats', ChatId);
     const openedDate = Timestamp.fromDate(new Date());
-    // let x : true
     return this.userService.currentUserProfile$.pipe(
       take(1),
       concatMap((user) => updateDoc(chatRef, {
-        lastMessage: '',
         lastMessageSeenAt: openedDate,
         lastMessageSeenByUserId: user?.uid,
-        // is_chatOpen: x
-      }))
+      })),
     )
   }
 
@@ -179,5 +150,86 @@ export class ChatService {
   getImageURL(imageFile: File, selectedChatId: string) {
     return this.uploadImageToStorage(imageFile, selectedChatId)
   }
+
+  isMessagesRead(selectedChat: Chat, chatId: string) {
+    const chatRef = doc(this.fireStore, 'chats', chatId);
+    const openedDate = Timestamp.fromDate(new Date());
+    return this.userService.currentUserProfile$.pipe(
+      take(1),
+      // concatMap((user) =>
+
+      //   updateDoc(ref, {
+      //     is_seen: ""
+      //   })
+      // ),
+      concatMap((user) => updateDoc(chatRef, {
+        chatOpenedAt: openedDate,
+        is_chatOpen: true,
+        chatOpenedBy: selectedChat.chatUser
+      })),
+    )
+  }
+
+  closeCurrentChat(chatId: string) {
+    const chatRef = doc(this.fireStore, 'chats', chatId);
+    const openedDate = Timestamp.fromDate(new Date());
+    return this.userService.currentUserProfile$.pipe(
+      take(1),
+
+      concatMap(() => updateDoc(chatRef, {
+        chatOpenedAt: openedDate,
+        is_chatOpen: false
+      })),
+    )
+  }
+
+  isMessagesReadFromInput(selectedChat: Chat, chatId: string) {
+    const chatRef = doc(this.fireStore, 'chats', chatId);
+    const openedDate = Timestamp.fromDate(new Date());
+
+    return this.userService.currentUserProfile$.pipe(
+      take(1),
+      concatMap((user) => updateDoc(chatRef, {
+        chatOpenedAt: openedDate,
+
+        is_chatOpen: true,
+        // chatOpenedBy: user?.uid,
+        chatOpenedBy: selectedChat.chatUser
+
+      })),
+    )
+  }
+
+  // fuction(chatId: string){
+  //   const ref = collection(this.fireStore, 'chats', chatId, 'messages')
+  //   ref.forEach(doc => {
+  //     doc.ref
+  //       .update({
+  //         score: 0
+  //       })
+  //   })
+  // }
+
+  // updateStatus(chatId: string): void {
+  //   const collectionRef = collection(this.fireStore,"messages")
+  //     .where("is_seen", "!=", true)
+
+  //   collectionRef.get().pipe(
+  //     map((querySnapshot : any) => {
+  //       querySnapshot.forEach((doc : any) => {
+  //         doc.ref.update({
+  //           is_seen: true
+  //         });
+  //       });
+  //     })
+  //   ).subscribe(
+  //     () => {
+  //       console.log('Capital updated successfully');
+  //     },
+  //     (error : any) => {
+  //       console.error('Error updating capital:', error);
+  //     }
+  //   );
+  // }
 
 }
