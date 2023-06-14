@@ -10,10 +10,13 @@ export interface Chat {
     lastMessageUserId: string,
     lastMessageSeenByUserId: string,
     lastMessageSeenAt: Date & Timestamp,
-    // is_chatOpen: boolean
+    is_chatOpen: boolean
+    chatOpenedBy: string
+    chatOpenedAt: Date & Timestamp,
 
     chatPic?: string,
     chatName: string | undefined
+    chatUser: string
 }
 
 export interface Message {

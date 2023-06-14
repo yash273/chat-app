@@ -42,7 +42,7 @@ export class HomeComponent implements OnInit {
     this.chatListControl.valueChanges,
     this.myChat$,
   ]).pipe(
-    map(([value, chat]) => chat.find((c) => c.id === value[0])));
+    map(([value, chat]) => chat.find((c) => c.id === value[0]))).subscribe((res) => { this.selectedChat = res });
 
   messages$ = this.chatListControl.valueChanges.pipe(
     map(value => value[0]),
@@ -52,7 +52,7 @@ export class HomeComponent implements OnInit {
     })
   )
   currentUser!: userProfile | null;
-  // selectedChat!: Chat;
+  selectedChat!: any;
 
   constructor(
     private userService: UserService,
@@ -111,7 +111,7 @@ export class HomeComponent implements OnInit {
   onImageSelected(event: any, selectedChat: Chat): any {
     const selectedImage = event.target.files[0];
     const selectedChatId = this.chatListControl.value[0];
-    this.chatService.lastSeenMessages(selectedChatId)
+    // this.chatService.lastSeenMessages(selectedChat, selectedChatId)
     this.chatService.getImageURL(selectedImage, selectedChatId).subscribe(
       imageUrl => {
         const message = '';
@@ -131,14 +131,26 @@ export class HomeComponent implements OnInit {
     );
   }
 
-  lastSeenMessages(chatId: string) {
-    this.chatService.lastSeenMessages(chatId).subscribe();
+  lastSeenMessages(selectedChat: Chat, chatId: string) {
+    this.chatService.lastSeenMessages(selectedChat, chatId).subscribe();
+    // this.chatService.lastSeenMessages(selectedChat, chatId)
+
     this.chatClose();
   }
-  isMessageSeen(message: Message): boolean {
-    // Implement your logic to determine if the message has been seen or not
-    // For example, you can compare the lastMessageUserId with the current user's ID
-    return message.senderId === this.currentUser?.uid;
+
+  isMessagesRead(selectedChat: Chat, chatId: string) {
+    this.chatService.isMessagesRead(selectedChat, chatId).subscribe();
+
   }
+
+  closeCurrentChat(chatId: string) {
+    this.chatService.closeCurrentChat(chatId).subscribe();
+    chatId = ''
+  }
+
+  // isMessagesReadFromInput(selectedChat: Chat, chatId: string) {
+  //   this.chatService.isMessagesReadFromInput(selectedChat, chatId).subscribe();
+
+  // }
 
 }

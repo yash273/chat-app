@@ -15,7 +15,7 @@
         </div>
         <mat-selection-list [multiple]="false" [formControl]="chatListControl">
             <mat-divider></mat-divider>
-            <mat-list-option *ngFor="let chat of myChat$ | async" [value]="chat.id" (click)="lastSeenMessages(chat.id)">
+            <mat-list-option *ngFor="let chat of myChat$ | async" [value]="chat.id" (click)="lastSeenMessages(chat,chat.id)" (click)="isMessagesRead(selectedChat,selectedChat.id)">
                 <img matListAvatar alt="" [src]="chat.chatPic ? chat.chatPic : '/assets/profile-placeholder.jpg'">
                 <p mat-line class="chat-title">
                     <span class="chat-name">
@@ -36,9 +36,12 @@
     </div>
     <div class="messages-section mat-elevation-z5">
 
-        <div class="messages-header" *ngIf="selectedChat$ | async as selectedChat; else noMessages;">
-            <img [src]="selectedChat.chatPic? selectedChat.chatPic: '/assets/profile-placeholder.jpg'">
-            <h2>{{ selectedChat.chatName }}</h2>
+        <div class="messages-header" *ngIf="selectedChat; else noMessages;">
+            <span>
+                <img [src]="selectedChat.chatPic? selectedChat.chatPic: '/assets/profile-placeholder.jpg'">
+                <h2>{{ selectedChat.chatName }}</h2>
+            </span>
+            <button mat-icon-button (click)="closeCurrentChat(selectedChat.id)"><mat-icon>close</mat-icon></button>
         </div>
 
         <mat-divider></mat-divider>
@@ -49,9 +52,10 @@
             </div>
         </ng-template>
 
-        <div class="chat-area">
+        <div class="chat-area" (click)="isMessagesRead(selectedChat,selectedChat.id)">
+            <!-- <div class="chat-area"> -->
             <ng-container *ngIf="user$ | async as currentUser">
-                <div *ngFor="let message of messages$ | async" class="message-container" [ngClass]="{'sender' : message.senderId === currentUser.uid}">
+                <div *ngFor="let message of messages$ | async;index as i" class="message-container" [ngClass]="{'sender' : message.senderId === currentUser.uid}">
                     <div class="message-bubble">
                         <ng-container *ngIf="message.imgURL === ''">
                             {{message.text }}
@@ -64,9 +68,21 @@
 
                         <span class="chat-date">
                             {{message.sentDate | dateDisplay }}
+
+                            <!-- {{i}} -->
                             <span *ngIf=" message.senderId === currentUser.uid;">
-                                <!-- <mat-icon *ngIf="isMessageSeen(message)">{{ message.senderId === currentUser?.uid ? 'done_all' : 'done' }}</mat-icon> -->
-                                <mat-icon>{{ message.is_seen ? 'done_all' : 'done' }}</mat-icon>
+                                <ng-container *ngIf="selectedChat.is_chatOpen == false; else xyz">
+                                    <mat-icon>
+                                        {{selectedChat.is_chatOpen == false ? 'done' : ''}}
+                                    </mat-icon>
+                                </ng-container>
+
+                                <ng-template #xyz>
+                                    <mat-icon [style.color]="(message.is_seen || (selectedChat.chatOpenedBy === currentUser.uid && message.is_seen && message.sentDate < selectedChat.lastMessage)) ? '#D8D4DF' : '#c2bfc9'">
+                                        <!-- {{ selectedChat.is_chatOpen == true && selectedChat.chatOpenedBy === currentUser.uid || message.is_seen == true ? 'done_all' : 'done' }} -->
+                                        {{ message.is_seen ||
+                                        selectedChat.chatOpenedBy === currentUser.uid && message.is_seen && message.sentDate < selectedChat.lastMessageDate ? 'done_all' : 'done' }} </mat-icon>
+                                </ng-template>
 
                             </span>
                         </span>
@@ -77,25 +93,15 @@
             </ng-container>
         </div>
 
-        <ng-template #noInput>
-            <div class="chat-area no-message">
-                <div class="inner-about">
-                    <img class="no-message-image" src="../../../assets/Conversa.svg" alt="">
-                    <span>
-                        <h1>Conversea</h1>
-                        <h3>Chat app with Firebase</h3>
-                    </span>
-                </div>
-            </div>
-        </ng-template>
-
         <div class="input-area">
-            <ng-container *ngIf="selectedChat$ | async as selectedChat; else noInput">
-                <ng-container *ngIf="selectedChat.lastMessageUserId === currentUser?.uid ">
-
-                    <span class="chat-seen">Last seen at {{selectedChat.lastMessageSeenAt | dateDisplay}}</span>
+            <!-- <div class="input-area" (click)="isMessagesReadFromInput(selectedChat,selectedChat.id)"> -->
+            <!-- <div class="input-area" (click)="isMessagesRead(selectedChat,selectedChat.id)"> -->
+            <ng-container *ngIf="selectedChat;">
+                <ng-container *ngIf="selectedChat.is_chatOpen == true && selectedChat.chatOpenedBy === currentUser?.uid">
+                    <span class="chat-seen">
+                        {{selectedChat.chatName}} is Active
+                    </span>
                 </ng-container>
-
                 <mat-form-field appearance="outline">
                     <input matInput placeholder="Enter Your message.." [formControl]="messageControl" (keydown.enter)="sendMessage(selectedChat)">
                     <button mat-icon-button matSuffix (click)="sendMessage(selectedChat)">
