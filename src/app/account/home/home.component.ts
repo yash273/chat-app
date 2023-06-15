@@ -140,7 +140,9 @@ export class HomeComponent implements OnInit {
 
   isMessagesRead(selectedChat: Chat, chatId: string) {
     this.chatService.isMessagesRead(selectedChat, chatId).subscribe();
-
+    if (selectedChat.is_chatOpen == true && selectedChat.chatOpenedBy === this.currentUser?.uid) {
+      this.chatService.update(chatId)
+    }
   }
 
   closeCurrentChat(chatId: string) {
@@ -151,6 +153,10 @@ export class HomeComponent implements OnInit {
   // isMessagesReadFromInput(selectedChat: Chat, chatId: string) {
   //   this.chatService.isMessagesReadFromInput(selectedChat, chatId).subscribe();
 
+  // }
+
+  // updateMessages(chatId: string) {
+  //   this.chatService.update(chatId)
   // }
 
 }

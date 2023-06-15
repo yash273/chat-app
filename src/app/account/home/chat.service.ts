@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DocumentData, DocumentReference, Firestore, Timestamp, addDoc, collection, collectionData, doc, getFirestore, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
+import { DocumentData, DocumentReference, Firestore, Timestamp, addDoc, collection, collectionData, doc, getDocs, getFirestore, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
 import { userProfile } from '../../interfaces/user';
 import { Observable, from } from 'rxjs';
 import { UserService } from '../user.service';
@@ -231,5 +231,19 @@ export class ChatService {
   //     }
   //   );
   // }
+  update(chatId: string) {
+
+    const collectionRef = collection(this.fireStore, 'chats', chatId, 'messages');
+
+    getDocs(collectionRef).then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        // Update each document here
+        updateDoc(doc.ref, {
+          is_seen: true
+          // Add more fields and values to update
+        });
+      });
+    });
+  }
 
 }
