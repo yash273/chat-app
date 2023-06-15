@@ -9,7 +9,7 @@
                 <mat-icon>edit</mat-icon>
             </button>
         </div>
-        <input #imageInput type="file" hidden (change)="uploadImage($event, user)">
+        <input #imageInput type="file" hidden (change)="uploadImage($event, user)" accept="image/*" >
 
         <form class="profile-form" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
             <div class="row">

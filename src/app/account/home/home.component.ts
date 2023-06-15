@@ -111,7 +111,6 @@ export class HomeComponent implements OnInit {
   onImageSelected(event: any, selectedChat: Chat): any {
     const selectedImage = event.target.files[0];
     const selectedChatId = this.chatListControl.value[0];
-    // this.chatService.lastSeenMessages(selectedChat, selectedChatId)
     this.chatService.getImageURL(selectedImage, selectedChatId).subscribe(
       imageUrl => {
         const message = '';
@@ -133,15 +132,13 @@ export class HomeComponent implements OnInit {
 
   lastSeenMessages(selectedChat: Chat, chatId: string) {
     this.chatService.lastSeenMessages(selectedChat, chatId).subscribe();
-    // this.chatService.lastSeenMessages(selectedChat, chatId)
-
     this.chatClose();
   }
 
   isMessagesRead(selectedChat: Chat, chatId: string) {
-    this.chatService.isMessagesRead(selectedChat, chatId).subscribe();
+    this.chatService.openChat(selectedChat, chatId).subscribe();
     if (selectedChat.is_chatOpen == true && selectedChat.chatOpenedBy === this.currentUser?.uid) {
-      this.chatService.update(chatId)
+      this.chatService.updateIsSeenMessage(chatId)
     }
   }
 
@@ -149,14 +146,5 @@ export class HomeComponent implements OnInit {
     this.chatService.closeCurrentChat(chatId).subscribe();
     chatId = ''
   }
-
-  // isMessagesReadFromInput(selectedChat: Chat, chatId: string) {
-  //   this.chatService.isMessagesReadFromInput(selectedChat, chatId).subscribe();
-
-  // }
-
-  // updateMessages(chatId: string) {
-  //   this.chatService.update(chatId)
-  // }
 
 }

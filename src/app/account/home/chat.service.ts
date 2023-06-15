@@ -151,17 +151,11 @@ export class ChatService {
     return this.uploadImageToStorage(imageFile, selectedChatId)
   }
 
-  isMessagesRead(selectedChat: Chat, chatId: string) {
+  openChat(selectedChat: Chat, chatId: string) {
     const chatRef = doc(this.fireStore, 'chats', chatId);
     const openedDate = Timestamp.fromDate(new Date());
     return this.userService.currentUserProfile$.pipe(
       take(1),
-      // concatMap((user) =>
-
-      //   updateDoc(ref, {
-      //     is_seen: ""
-      //   })
-      // ),
       concatMap((user) => updateDoc(chatRef, {
         chatOpenedAt: openedDate,
         is_chatOpen: true,
@@ -183,64 +177,14 @@ export class ChatService {
     )
   }
 
-  isMessagesReadFromInput(selectedChat: Chat, chatId: string) {
-    const chatRef = doc(this.fireStore, 'chats', chatId);
-    const openedDate = Timestamp.fromDate(new Date());
-
-    return this.userService.currentUserProfile$.pipe(
-      take(1),
-      concatMap((user) => updateDoc(chatRef, {
-        chatOpenedAt: openedDate,
-
-        is_chatOpen: true,
-        // chatOpenedBy: user?.uid,
-        chatOpenedBy: selectedChat.chatUser
-
-      })),
-    )
-  }
-
-  // fuction(chatId: string){
-  //   const ref = collection(this.fireStore, 'chats', chatId, 'messages')
-  //   ref.forEach(doc => {
-  //     doc.ref
-  //       .update({
-  //         score: 0
-  //       })
-  //   })
-  // }
-
-  // updateStatus(chatId: string): void {
-  //   const collectionRef = collection(this.fireStore,"messages")
-  //     .where("is_seen", "!=", true)
-
-  //   collectionRef.get().pipe(
-  //     map((querySnapshot : any) => {
-  //       querySnapshot.forEach((doc : any) => {
-  //         doc.ref.update({
-  //           is_seen: true
-  //         });
-  //       });
-  //     })
-  //   ).subscribe(
-  //     () => {
-  //       console.log('Capital updated successfully');
-  //     },
-  //     (error : any) => {
-  //       console.error('Error updating capital:', error);
-  //     }
-  //   );
-  // }
-  update(chatId: string) {
+  updateIsSeenMessage(chatId: string) {
 
     const collectionRef = collection(this.fireStore, 'chats', chatId, 'messages');
 
     getDocs(collectionRef).then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        // Update each document here
         updateDoc(doc.ref, {
           is_seen: true
-          // Add more fields and values to update
         });
       });
     });

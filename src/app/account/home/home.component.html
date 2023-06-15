@@ -41,7 +41,6 @@
                 <img [src]="selectedChat.chatPic? selectedChat.chatPic: '/assets/profile-placeholder.jpg'">
                 <h2>{{ selectedChat.chatName }}</h2>
             </span>
-            <button mat-icon-button (click)="closeCurrentChat(selectedChat.id)"><mat-icon>close</mat-icon></button>
         </div>
 
         <mat-divider></mat-divider>
@@ -53,7 +52,6 @@
         </ng-template>
 
         <div class="chat-area" (click)="isMessagesRead(selectedChat,selectedChat.id)">
-            <!-- <div class="chat-area"> -->
             <ng-container *ngIf="user$ | async as currentUser">
                 <div *ngFor="let message of messages$ | async;index as i" class="message-container" [ngClass]="{'sender' : message.senderId === currentUser.uid}">
                     <div class="message-bubble">
@@ -69,7 +67,6 @@
                         <span class="chat-date">
                             {{message.sentDate | dateDisplay }}
 
-                            <!-- {{i}} -->
                             <span *ngIf=" message.senderId === currentUser.uid;">
                                 <ng-container *ngIf="selectedChat.is_chatOpen == false; else xyz">
                                     <mat-icon>
@@ -79,7 +76,6 @@
 
                                 <ng-template #xyz>
                                     <mat-icon [style.color]="(message.is_seen || (selectedChat.chatOpenedBy === currentUser.uid && message.is_seen && message.sentDate < selectedChat.lastMessage)) ? '#D8D4DF' : '#c2bfc9'">
-                                        <!-- {{ selectedChat.is_chatOpen == true && selectedChat.chatOpenedBy === currentUser.uid || message.is_seen == true ? 'done_all' : 'done' }} -->
                                         {{ message.is_seen ||
                                         selectedChat.chatOpenedBy === currentUser.uid && message.is_seen && message.sentDate < selectedChat.lastMessageDate ? 'done_all' : 'done' }} </mat-icon>
                                 </ng-template>
@@ -94,8 +90,6 @@
         </div>
 
         <div class="input-area">
-            <!-- <div class="input-area" (click)="isMessagesReadFromInput(selectedChat,selectedChat.id)"> -->
-            <!-- <div class="input-area" (click)="isMessagesRead(selectedChat,selectedChat.id)"> -->
             <ng-container *ngIf="selectedChat;">
                 <ng-container *ngIf="selectedChat.is_chatOpen == true && selectedChat.chatOpenedBy === currentUser?.uid">
                     <span class="chat-seen">
@@ -116,10 +110,6 @@
                     <mat-icon>image</mat-icon>
                     <input type="file" accept="image/*" class="hidden-input" (change)="onImageSelected($event, selectedChat)">
                 </button>
-
-                <!-- <button mat-icon-button (click)="updateMessages(selectedChat.id)">
-                    <mat-icon>home</mat-icon>
-                </button> -->
             </ng-container>
         </div>
 
