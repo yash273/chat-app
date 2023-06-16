@@ -63,12 +63,12 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.userService.currentUserProfile$.subscribe((res) => { this.currentUser = res });
-    
-    if (this.currentUser !== null) {
-// debugger
-    this.chatService.listenTypingStatus(this.currentUser.uid,this.selectedChat.id, (isTyping: boolean) =>
-    {this.isTyping = isTyping; })
-    }
+
+    //     if (this.currentUser !== null) {
+    // // debugger
+    //     this.chatService.listenTypingStatus(this.currentUser.uid,this.selectedChat.id, (isTyping: boolean) =>
+    //     {this.isTyping = isTyping; })
+    //     }
   }
 
   createChat(chatUser: userProfile) {
@@ -157,15 +157,26 @@ export class HomeComponent implements OnInit {
   startTyping(selectedChat: Chat) {
     if (this.currentUser !== null) {
 
-    this.chatService.startTyping(this.currentUser.uid,selectedChat.id).subscribe()
+      this.chatService.startTyping(this.currentUser.uid, selectedChat.id).subscribe()
     }
   }
 
   stopTyping(selectedChat: Chat) {
     if (this.currentUser !== null) {
 
-    this.chatService.stopTyping(this.currentUser.uid,selectedChat.id).subscribe()
+      this.chatService.stopTyping(this.currentUser.uid, selectedChat.id).subscribe()
     }
+  }
+
+  onScroll(event: any): void {
+    let scrollTop = event.target.scrollTop;
+    // const scrollHeight = event.target.scrollHeight;
+    // const clientHeight = event.target.clientHeight;
+    if (scrollTop) {
+      console.log(scrollTop, "sctop0")
+
+    }
+    console.log(scrollTop, "sctop")
   }
 
 }

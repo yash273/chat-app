@@ -45,6 +45,7 @@ mat-list-base .mat-list-item .mat-list-avatar, .mat-list-base .mat-list-option .
 .no-message-image{height: 350px;width: 350px;}
 .hidden-input {position: absolute;top: 0;left: 0;width: 40px;height: 40px;opacity: 0; }
 .message-image{width: 300px;}
+.seen-indicator{font-size: 18px;margin-left: 4px;color:#D8D4DF}
 @media (max-width:991px) { 
 
     .chat-list{width: 300px; position: fixed;top:80px;z-index: 20;left: -300px;height:100vh;}

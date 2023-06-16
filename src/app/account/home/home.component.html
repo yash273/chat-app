@@ -51,7 +51,7 @@
             </div>
         </ng-template>
 
-        <div class="chat-area" (click)="isMessagesRead(selectedChat,selectedChat.id)">
+        <div class="chat-area" (click)="isMessagesRead(selectedChat,selectedChat.id)" (scroll)="onScroll($event)">
             <ng-container *ngIf="user$ | async as currentUser">
                 <div *ngFor="let message of messages$ | async;index as i" class="message-container" [ngClass]="{'sender' : message.senderId === currentUser.uid}">
                     <div class="message-bubble">
@@ -68,18 +68,9 @@
                             {{message.sentDate | dateDisplay }}
 
                             <span *ngIf=" message.senderId === currentUser.uid;">
-                                <ng-container *ngIf="selectedChat.is_chatOpen == false; else xyz">
-                                    <mat-icon>
-                                        {{selectedChat.is_chatOpen == false ? 'done' : ''}}
-                                    </mat-icon>
-                                </ng-container>
-
-                                <ng-template #xyz>
-                                    <mat-icon [style.color]="(message.is_seen || (selectedChat.chatOpenedBy === currentUser.uid && message.is_seen && message.sentDate < selectedChat.lastMessage)) ? '#D8D4DF' : '#c2bfc9'">
-                                        {{ message.is_seen ||
-                                        selectedChat.chatOpenedBy === currentUser.uid && message.is_seen && message.sentDate < selectedChat.lastMessageDate ? 'done_all' : 'done' }} </mat-icon>
-                                </ng-template>
-
+                                <mat-icon class="seen-indicator">
+                                    {{ message.is_seen ||
+                                    selectedChat.chatOpenedBy === currentUser.uid && message.is_seen && message.sentDate < selectedChat.lastMessageDate ? 'done_all' : 'done' }} </mat-icon>
                             </span>
                         </span>
 
@@ -97,9 +88,7 @@
                     </span>
                 </ng-container>
                 <mat-form-field appearance="outline">
-                    <input matInput placeholder="Enter Your message.." [formControl]="messageControl" 
-                    (keydown.enter)="sendMessage(selectedChat)"
-                    (keydown)="startTyping(selectedChat)" (keyup)="stopTyping(selectedChat)">
+                    <input matInput placeholder="Enter Your message.." [formControl]="messageControl" (keydown.enter)="sendMessage(selectedChat)" (keydown)="startTyping(selectedChat)" (keyup)="stopTyping(selectedChat)">
                     <button mat-icon-button matSuffix (click)="sendMessage(selectedChat)">
                         <mat-icon>send</mat-icon>
                     </button>
