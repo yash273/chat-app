@@ -97,7 +97,9 @@
                     </span>
                 </ng-container>
                 <mat-form-field appearance="outline">
-                    <input matInput placeholder="Enter Your message.." [formControl]="messageControl" (keydown.enter)="sendMessage(selectedChat)">
+                    <input matInput placeholder="Enter Your message.." [formControl]="messageControl" 
+                    (keydown.enter)="sendMessage(selectedChat)"
+                    (keydown)="startTyping(selectedChat)" (keyup)="stopTyping(selectedChat)">
                     <button mat-icon-button matSuffix (click)="sendMessage(selectedChat)">
                         <mat-icon>send</mat-icon>
                     </button>

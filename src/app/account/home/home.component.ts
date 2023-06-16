@@ -23,6 +23,9 @@ export class HomeComponent implements OnInit {
   messageControl = new FormControl('');
   emojiClicked: boolean = false;
   selectedImage!: File;
+  currentUser!: userProfile | null;
+  selectedChat!: any;
+  isTyping = false;
 
   @ViewChild('endOfChat') endOfChat!: ElementRef;
 
@@ -51,8 +54,7 @@ export class HomeComponent implements OnInit {
       this.scrollingToBottom()
     })
   )
-  currentUser!: userProfile | null;
-  selectedChat!: any;
+
 
   constructor(
     private userService: UserService,
@@ -61,7 +63,12 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.userService.currentUserProfile$.subscribe((res) => { this.currentUser = res });
-
+    
+    if (this.currentUser !== null) {
+// debugger
+    this.chatService.listenTypingStatus(this.currentUser.uid,this.selectedChat.id, (isTyping: boolean) =>
+    {this.isTyping = isTyping; })
+    }
   }
 
   createChat(chatUser: userProfile) {
@@ -145,6 +152,20 @@ export class HomeComponent implements OnInit {
   closeCurrentChat(chatId: string) {
     this.chatService.closeCurrentChat(chatId).subscribe();
     chatId = ''
+  }
+
+  startTyping(selectedChat: Chat) {
+    if (this.currentUser !== null) {
+
+    this.chatService.startTyping(this.currentUser.uid,selectedChat.id).subscribe()
+    }
+  }
+
+  stopTyping(selectedChat: Chat) {
+    if (this.currentUser !== null) {
+
+    this.chatService.stopTyping(this.currentUser.uid,selectedChat.id).subscribe()
+    }
   }
 
 }

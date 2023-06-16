@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { DocumentData, DocumentReference, Firestore, Timestamp, addDoc, collection, collectionData, doc, getDocs, getFirestore, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
-import { userProfile } from '../../interfaces/user';
+import { DocumentData, DocumentReference, DocumentSnapshot, Firestore, Timestamp, addDoc, collection, collectionData, doc, getDocs, getFirestore, orderBy, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
+import { TypingStatus, userProfile } from '../../interfaces/user';
 import { Observable, from } from 'rxjs';
 import { UserService } from '../user.service';
 import { concatMap, finalize, map, switchMap, take, tap } from 'rxjs/operators';
@@ -31,12 +31,14 @@ export class ChatService {
           {
             displayName: user?.displayName ?? '',
             photoURL: user?.photoURL ?? '',
-            uid: user?.uid ?? ''
+            uid: user?.uid ?? '',
+            
           },
           {
             displayName: chatUser?.displayName ?? '',
             photoURL: chatUser?.photoURL ?? '',
-            uid: chatUser?.uid ?? ''
+            uid: chatUser?.uid ?? '',
+            
           }
         ]
       })),
@@ -190,4 +192,36 @@ export class ChatService {
     });
   }
 
+  startTyping(currentUserId: string,chatId: string) {
+    const userTypingRef = doc(this.fireStore, 'chats', chatId,'typingStatus',currentUserId);
+    return this.userService.currentUserProfile$.pipe(
+      take(1),
+      concatMap((user) => setDoc(userTypingRef, {
+        isTyping: true,
+      })),
+    )
+  }
+
+  stopTyping(currentUserId: string,chatId: string) {
+    const userTypingRef = doc(this.fireStore, 'chats', chatId,'typingStatus',currentUserId);
+    return this.userService.currentUserProfile$.pipe(
+      take(1),
+      concatMap((user) => setDoc(userTypingRef, {
+        isTyping: false
+      })),
+    )
+  }
+
+  // listenTypingStatus(currentUserId: string, chatId: string, callback: (isTyping: boolean) => void): void {
+  //   const typingStatusDoc =  doc(this.fireStore, 'chats', chatId,'typingStatus',currentUserId);
+  //   typingStatusDoc.valueChanges()
+  //   .pipe(
+  //     map((doc: DocumentSnapshot<TypingStatus>) => {
+  //       const data = doc.data();
+  //       return data?.isTyping ?? false;
+  //     })
+  //   ).subscribe((isTyping: boolean) => {
+  //     callback(isTyping);
+  //   });
+  // }
 }

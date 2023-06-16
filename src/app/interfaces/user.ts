@@ -7,3 +7,7 @@ export interface userProfile {
     phone?: string;
     photoURL?: string;
 }
+
+export interface TypingStatus {
+    isTyping: boolean;
+  }
