@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UserService } from '../user.service';
 import { FormControl } from '@angular/forms';
-import { combineLatest, of } from 'rxjs';
+import { Observable, combineLatest, of } from 'rxjs';
 import { map, startWith, switchMap, tap } from 'rxjs/operators';
 import { userProfile } from '../../interfaces/user';
 import { ChatService } from './chat.service';
@@ -26,6 +26,7 @@ export class HomeComponent implements OnInit {
   currentUser!: userProfile | null;
   selectedChat!: any;
   isTyping = false;
+  // messages$ : Observable<Message[]> | undefined
 
   @ViewChild('endOfChat') endOfChat!: ElementRef;
 
@@ -45,11 +46,20 @@ export class HomeComponent implements OnInit {
     this.chatListControl.valueChanges,
     this.myChat$,
   ]).pipe(
-    map(([value, chat]) => chat.find((c) => c.id === value[0]))).subscribe((res) => { this.selectedChat = res });
+    map(([value, chat]) => 
+    chat.find((c) => c.id === value[0])
+    ))
+    .subscribe(
+      (res) => { this.selectedChat = res
+       this.xyz(res)
+      }
+      );
 
   messages$ = this.chatListControl.valueChanges.pipe(
     map(value => value[0]),
-    switchMap(chatId => this.chatService.getChatMessages(chatId)),
+    switchMap(chatId => 
+      this.chatService.getChatMessages(chatId)
+      ),
     tap(() => {
       this.scrollingToBottom()
     })
@@ -63,12 +73,12 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.userService.currentUserProfile$.subscribe((res) => { this.currentUser = res });
+  }
 
-    //     if (this.currentUser !== null) {
-    // // debugger
-    //     this.chatService.listenTypingStatus(this.currentUser.uid,this.selectedChat.id, (isTyping: boolean) =>
-    //     {this.isTyping = isTyping; })
-    //     }
+  xyz(sChat: Chat | undefined){
+    
+    this.messages$
+    // console.log(sChat)
   }
 
   createChat(chatUser: userProfile) {
@@ -170,13 +180,15 @@ export class HomeComponent implements OnInit {
 
   onScroll(event: any): void {
     let scrollTop = event.target.scrollTop;
-    // const scrollHeight = event.target.scrollHeight;
-    // const clientHeight = event.target.clientHeight;
-    if (scrollTop) {
-      console.log(scrollTop, "sctop0")
 
+    if (scrollTop == 0) {
+      console.log(scrollTop, "sctop0")
+      // this.getPreviousChatMessages()
     }
-    console.log(scrollTop, "sctop")
+  }
+
+  getPreviousChatMessages(){
+    this.chatService.getPreviousChatMessages(this.selectedChat.id)
   }
 
 }

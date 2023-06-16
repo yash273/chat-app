@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DocumentData, DocumentReference, DocumentSnapshot, Firestore, Timestamp, addDoc, collection, collectionData, doc, getDocs, getFirestore, orderBy, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
+import { DocumentData, DocumentReference, DocumentSnapshot, Firestore, Timestamp, addDoc, collection, collectionData, doc, getDocs, getFirestore, limit, limitToLast, orderBy, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
 import { TypingStatus, userProfile } from '../../interfaces/user';
 import { Observable, from } from 'rxjs';
 import { UserService } from '../user.service';
@@ -113,7 +113,14 @@ export class ChatService {
 
   getChatMessages(chatId: string): Observable<Message[]> {
     const ref = collection(this.fireStore, 'chats', chatId, 'messages');
-    const queryAll = query(ref, orderBy('sentDate', 'asc'));
+    const queryAll = query(ref, orderBy('sentDate', 'asc'),limitToLast(10));
+    return collectionData(queryAll) as Observable<Message[]>
+  }
+
+  getPreviousChatMessages(chatId: string): Observable<Message[]> {
+    // debugger
+    const ref = collection(this.fireStore, 'chats', chatId, 'messages');
+    const queryAll = query(ref, orderBy('sentDate', 'asc'),limitToLast(30));
     return collectionData(queryAll) as Observable<Message[]>
   }
 

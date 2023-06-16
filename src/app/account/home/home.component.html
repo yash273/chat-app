@@ -57,6 +57,7 @@
                     <div class="message-bubble">
                         <ng-container *ngIf="message.imgURL === ''">
                             {{message.text }}
+                            {{i}}
                         </ng-container>
                         <ng-container *ngIf="message.text === ''">
                             <a [href]="message.imgURL" target="_blank">
