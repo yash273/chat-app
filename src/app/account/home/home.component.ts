@@ -1,8 +1,8 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { UserService } from '../user.service';
 import { FormControl } from '@angular/forms';
-import { Observable, combineLatest, of } from 'rxjs';
-import { map, startWith, switchMap, tap } from 'rxjs/operators';
+import { Observable, Subject, combineLatest, of } from 'rxjs';
+import { map, scan, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { userProfile } from '../../interfaces/user';
 import { ChatService } from './chat.service';
 import { AuthenticationService } from '../authentication.service';
@@ -26,11 +26,14 @@ export class HomeComponent implements OnInit {
   currentUser!: userProfile | null;
   selectedChat!: any;
   isTyping = false;
-  // messages$ : Observable<Message[]> | undefined
+  messages$: Observable<Message[]>;
+  lastLoadedMessage: Message | null = null;
+  allMessages: Message[] = []
+  isLastMessage: boolean = false
+  isNewMessage: boolean = true
+  loading = true; // Track the loading state
 
   @ViewChild('endOfChat') endOfChat!: ElementRef;
-
-
 
   user$ = this.userService.currentUserProfile$;
   myChat$ = this.chatService.myChat$;
@@ -46,39 +49,64 @@ export class HomeComponent implements OnInit {
     this.chatListControl.valueChanges,
     this.myChat$,
   ]).pipe(
-    map(([value, chat]) => 
-    chat.find((c) => c.id === value[0])
+    map(([value, chat]) =>
+      chat.find((c) => c.id === value[0])
     ))
     .subscribe(
-      (res) => { this.selectedChat = res
-       this.xyz(res)
+      (res) => {
+        this.selectedChat = res
       }
-      );
-
-  messages$ = this.chatListControl.valueChanges.pipe(
-    map(value => value[0]),
-    switchMap(chatId => 
-      this.chatService.getChatMessages(chatId)
-      ),
-    tap(() => {
-      this.scrollingToBottom()
-    })
-  )
-
+    );
 
   constructor(
     private userService: UserService,
     private chatService: ChatService,
-  ) { }
+  ) {
+
+    this.messages$ = this.chatListControl.valueChanges.pipe(
+      map(value => value[0]),
+      switchMap(chatId => {
+        // debugger
+        return this.chatService.getChatMessages(chatId).pipe(
+          map((messages) => {
+            this.allMessages = messages
+            return this.allMessages
+          }))
+      }),
+      tap(res => {
+        if (this.isNewMessage) {
+          if (this.isLastMessage) {
+            this.allMessages = this.allMessages.concat(res[res.length - 1])
+          } else {
+            this.allMessages = res
+          }
+        }
+        this.scrollingToBottom();
+        this.isLastMessage = true
+        this.isNewMessage = false;
+        this.loading = false
+        console.log('message$')
+      }),
+    );
+
+  }
 
   ngOnInit(): void {
     this.userService.currentUserProfile$.subscribe((res) => { this.currentUser = res });
   }
 
-  xyz(sChat: Chat | undefined){
-    
-    this.messages$
-    // console.log(sChat)
+  loadMoreMessages() {
+    if (!this.loading) {
+      this.loading = true;
+      const lastMessage = this.allMessages[0];
+      const previousMessages = this.allMessages;
+      this.chatService.getPreviousChatMessages(this.chatListControl.value[0], lastMessage).subscribe(
+        res => {
+          this.allMessages = res.concat(previousMessages)
+          this.loading = false
+        }
+      )
+    }
   }
 
   createChat(chatUser: userProfile) {
@@ -96,9 +124,12 @@ export class HomeComponent implements OnInit {
   }
 
   sendMessage(selectedChat: Chat) {
+    // debugger
     const message = this.messageControl.value;
     const selectedChatId = this.chatListControl.value[0];
     const imgURL = '';
+    this.isNewMessage = true
+
     if (this.currentUser !== null) {
       if (message && selectedChatId || imgURL && selectedChatId) {
         this.chatService.createMessages(selectedChatId, message, imgURL, this.currentUser, selectedChat).subscribe(() => {
@@ -114,7 +145,7 @@ export class HomeComponent implements OnInit {
       if (this.endOfChat) {
         this.endOfChat.nativeElement.scrollIntoView({ behavior: 'smooth' })
       }
-    }, 100)
+    }, 500)
   }
 
   chatClose() {
@@ -128,6 +159,7 @@ export class HomeComponent implements OnInit {
   onImageSelected(event: any, selectedChat: Chat): any {
     const selectedImage = event.target.files[0];
     const selectedChatId = this.chatListControl.value[0];
+    this.isNewMessage = true
     this.chatService.getImageURL(selectedImage, selectedChatId).subscribe(
       imageUrl => {
         const message = '';
@@ -159,11 +191,6 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  closeCurrentChat(chatId: string) {
-    this.chatService.closeCurrentChat(chatId).subscribe();
-    chatId = ''
-  }
-
   startTyping(selectedChat: Chat) {
     if (this.currentUser !== null) {
 
@@ -179,16 +206,9 @@ export class HomeComponent implements OnInit {
   }
 
   onScroll(event: any): void {
-    let scrollTop = event.target.scrollTop;
-
+    const scrollTop = event.target.scrollTop;
     if (scrollTop == 0) {
-      console.log(scrollTop, "sctop0")
-      // this.getPreviousChatMessages()
+      this.loadMoreMessages();
     }
   }
-
-  getPreviousChatMessages(){
-    this.chatService.getPreviousChatMessages(this.selectedChat.id)
-  }
-
 }

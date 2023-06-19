@@ -11,6 +11,7 @@ import { NavbarComponent } from '../components/navbar/navbar.component';
 import { HomeComponent } from './home/home.component';
 import { DateDisplayPipe } from '../pipes/date-display.pipe';
 import { NgxEmojiPickerModule } from 'ngx-emoji-picker';
+import { LoaderComponent } from '../components/loader/loader.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { NgxEmojiPickerModule } from 'ngx-emoji-picker';
     ProfileComponent,
     NavbarComponent,
     HomeComponent,
-    DateDisplayPipe
+    DateDisplayPipe,
+    LoaderComponent
   ],
   imports: [
     CommonModule,

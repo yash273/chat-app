@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DocumentData, DocumentReference, DocumentSnapshot, Firestore, Timestamp, addDoc, collection, collectionData, doc, getDocs, getFirestore, limit, limitToLast, orderBy, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
+import { DocumentData, DocumentReference, DocumentSnapshot, Firestore, Query, Timestamp, addDoc, collection, collectionData, doc, endBefore, getDocs, getFirestore, limit, limitToLast, orderBy, query, setDoc, startAfter, updateDoc, where } from '@angular/fire/firestore';
 import { TypingStatus, userProfile } from '../../interfaces/user';
 import { Observable, from } from 'rxjs';
 import { UserService } from '../user.service';
@@ -32,13 +32,13 @@ export class ChatService {
             displayName: user?.displayName ?? '',
             photoURL: user?.photoURL ?? '',
             uid: user?.uid ?? '',
-            
+
           },
           {
             displayName: chatUser?.displayName ?? '',
             photoURL: chatUser?.photoURL ?? '',
             uid: chatUser?.uid ?? '',
-            
+
           }
         ]
       })),
@@ -111,16 +111,21 @@ export class ChatService {
     )
   }
 
-  getChatMessages(chatId: string): Observable<Message[]> {
+  getPreviousChatMessages(chatId: string, lastMessage: Message | null): Observable<Message[]> {
     const ref = collection(this.fireStore, 'chats', chatId, 'messages');
-    const queryAll = query(ref, orderBy('sentDate', 'asc'),limitToLast(10));
-    return collectionData(queryAll) as Observable<Message[]>
+    let queryAll: Query<DocumentData>
+    if (lastMessage) {
+      const startAfterValue = lastMessage.sentDate;
+      queryAll = query(ref, orderBy('sentDate', 'asc'), limitToLast(20), endBefore(startAfterValue));
+    } else {
+      queryAll = query(ref, orderBy('sentDate', 'asc'), limitToLast(20));
+    }
+    return collectionData(queryAll) as Observable<Message[]>;
   }
 
-  getPreviousChatMessages(chatId: string): Observable<Message[]> {
-    // debugger
+  getChatMessages(chatId: string): Observable<Message[]> {
     const ref = collection(this.fireStore, 'chats', chatId, 'messages');
-    const queryAll = query(ref, orderBy('sentDate', 'asc'),limitToLast(30));
+    const queryAll = query(ref, orderBy('sentDate', 'asc'), limitToLast(20));
     return collectionData(queryAll) as Observable<Message[]>
   }
 
@@ -142,7 +147,6 @@ export class ChatService {
     if (window.screen.width <= 991) {
       const chatListClass = document.getElementsByClassName('chat-container')
       chatListClass[0].classList.toggle('chatClose')
-
     }
   }
 
@@ -173,23 +177,8 @@ export class ChatService {
     )
   }
 
-  closeCurrentChat(chatId: string) {
-    const chatRef = doc(this.fireStore, 'chats', chatId);
-    const openedDate = Timestamp.fromDate(new Date());
-    return this.userService.currentUserProfile$.pipe(
-      take(1),
-
-      concatMap(() => updateDoc(chatRef, {
-        chatOpenedAt: openedDate,
-        is_chatOpen: false
-      })),
-    )
-  }
-
   updateIsSeenMessage(chatId: string) {
-
     const collectionRef = collection(this.fireStore, 'chats', chatId, 'messages');
-
     getDocs(collectionRef).then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         updateDoc(doc.ref, {
@@ -199,8 +188,8 @@ export class ChatService {
     });
   }
 
-  startTyping(currentUserId: string,chatId: string) {
-    const userTypingRef = doc(this.fireStore, 'chats', chatId,'typingStatus',currentUserId);
+  startTyping(currentUserId: string, chatId: string) {
+    const userTypingRef = doc(this.fireStore, 'chats', chatId, 'typingStatus', currentUserId);
     return this.userService.currentUserProfile$.pipe(
       take(1),
       concatMap((user) => setDoc(userTypingRef, {
@@ -209,8 +198,8 @@ export class ChatService {
     )
   }
 
-  stopTyping(currentUserId: string,chatId: string) {
-    const userTypingRef = doc(this.fireStore, 'chats', chatId,'typingStatus',currentUserId);
+  stopTyping(currentUserId: string, chatId: string) {
+    const userTypingRef = doc(this.fireStore, 'chats', chatId, 'typingStatus', currentUserId);
     return this.userService.currentUserProfile$.pipe(
       take(1),
       concatMap((user) => setDoc(userTypingRef, {

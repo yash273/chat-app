@@ -52,31 +52,41 @@
         </ng-template>
 
         <div class="chat-area" (click)="isMessagesRead(selectedChat,selectedChat.id)" (scroll)="onScroll($event)">
+
             <ng-container *ngIf="user$ | async as currentUser">
-                <div *ngFor="let message of messages$ | async;index as i" class="message-container" [ngClass]="{'sender' : message.senderId === currentUser.uid}">
-                    <div class="message-bubble">
-                        <ng-container *ngIf="message.imgURL === ''">
-                            {{message.text }}
-                            {{i}}
-                        </ng-container>
-                        <ng-container *ngIf="message.text === ''">
-                            <a [href]="message.imgURL" target="_blank">
-                                <img class="message-image" [src]="message.imgURL" alt="msg-images">
-                            </a>
-                        </ng-container>
 
-                        <span class="chat-date">
-                            {{message.sentDate | dateDisplay }}
+                <ng-container *ngIf="messages$ | async as messages">
+                    <ng-container *ngIf="loading">
+                        <div class="loader">
+                            <app-loader></app-loader>
+                        </div>
+                    </ng-container>
+                    <div *ngFor="let message of allMessages;index as i" class="message-container" [ngClass]="{'sender' : message.senderId === currentUser.uid}">
 
-                            <span *ngIf=" message.senderId === currentUser.uid;">
-                                <mat-icon class="seen-indicator">
-                                    {{ message.is_seen ||
-                                    selectedChat.chatOpenedBy === currentUser.uid && message.is_seen && message.sentDate < selectedChat.lastMessageDate ? 'done_all' : 'done' }} </mat-icon>
+                        <div class="message-bubble">
+                            <ng-container *ngIf="message.imgURL === ''">
+                                {{message.text }}
+                                {{i}}
+                            </ng-container>
+                            <ng-container *ngIf="message.text === ''">
+                                <a [href]="message.imgURL" target="_blank">
+                                    <img class="message-image" [src]="message.imgURL" alt="msg-images">
+                                </a>
+                            </ng-container>
+
+                            <span class="chat-date">
+                                {{message.sentDate | dateDisplay }}
+
+                                <span *ngIf=" message.senderId === currentUser.uid;">
+                                    <mat-icon class="seen-indicator">
+                                        {{ message.is_seen ||
+                                        selectedChat.chatOpenedBy === currentUser.uid && message.is_seen && message.sentDate < selectedChat.lastMessageDate ? 'done_all' : 'done' }} </mat-icon>
+                                </span>
                             </span>
-                        </span>
 
+                        </div>
                     </div>
-                </div>
+                </ng-container>
                 <div #endOfChat></div>
             </ng-container>
         </div>

@@ -18,6 +18,7 @@ import { AlertComponent } from './alert/alert.component';
   declarations: [
     AppComponent,
     AlertComponent,
+    // LoaderComponent,
   ],
   imports: [
     BrowserModule,
