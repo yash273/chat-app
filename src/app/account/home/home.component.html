@@ -66,7 +66,7 @@
                         <div class="message-bubble">
                             <ng-container *ngIf="message.imgURL === ''">
                                 {{message.text }}
-                                {{i}}
+
                             </ng-container>
                             <ng-container *ngIf="message.text === ''">
                                 <a [href]="message.imgURL" target="_blank">
@@ -87,12 +87,17 @@
                         </div>
                     </div>
                 </ng-container>
-                <div #endOfChat></div>
+                <div #endOfChat class="endOfChat">endOfChat</div>
+
             </ng-container>
         </div>
 
         <div class="input-area">
             <ng-container *ngIf="selectedChat;">
+                <button class="scrollToBottom" mat-mini-fab (click)="scrollingToBottom()">
+                    <mat-icon>keyboard_arrow_down</mat-icon>
+                </button>
+
                 <ng-container *ngIf="selectedChat.is_chatOpen == true && selectedChat.chatOpenedBy === currentUser?.uid">
                     <span class="chat-seen">
                         {{selectedChat.chatName}} is Active

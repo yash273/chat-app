@@ -6,6 +6,7 @@ import { UserService } from '../user.service';
 import { concatMap, finalize, map, switchMap, take, tap } from 'rxjs/operators';
 import { Chat, Message } from '../../interfaces/chat';
 import { Storage, getDownloadURL, ref, uploadBytes } from '@angular/fire/storage';
+import { timeStamp } from 'console';
 
 
 @Injectable({
@@ -177,16 +178,28 @@ export class ChatService {
     )
   }
 
+  // updateIsSeenMessage(chatId: string) {
+  //   const collectionRef = collection(this.fireStore, 'chats', chatId, 'messages');
+  //   getDocs(collectionRef).then((querySnapshot) => {
+  //     querySnapshot.forEach((doc) => {
+  //       updateDoc(doc.ref, {
+  //         is_seen: true
+  //       });
+  //     });
+  //   });
+  // }
+
   updateIsSeenMessage(chatId: string) {
     const collectionRef = collection(this.fireStore, 'chats', chatId, 'messages');
     getDocs(collectionRef).then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
+      querySnapshot.docs.map((doc) => {
         updateDoc(doc.ref, {
           is_seen: true
         });
       });
     });
   }
+
 
   startTyping(currentUserId: string, chatId: string) {
     const userTypingRef = doc(this.fireStore, 'chats', chatId, 'typingStatus', currentUserId);
