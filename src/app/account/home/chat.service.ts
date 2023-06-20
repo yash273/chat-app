@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { DocumentData, DocumentReference, DocumentSnapshot, Firestore, Query, Timestamp, addDoc, collection, collectionData, doc, endBefore, getDocs, getFirestore, limit, limitToLast, orderBy, query, setDoc, startAfter, updateDoc, where } from '@angular/fire/firestore';
-import { TypingStatus, userProfile } from '../../interfaces/user';
+import { DocumentData, Firestore, Query, Timestamp, addDoc, collection, collectionData, doc, endBefore, getDocs,  limitToLast, orderBy, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
+import { userProfile } from '../../interfaces/user';
 import { Observable, from } from 'rxjs';
 import { UserService } from '../user.service';
 import { concatMap, finalize, map, switchMap, take, tap } from 'rxjs/operators';
 import { Chat, Message } from '../../interfaces/chat';
 import { Storage, getDownloadURL, ref, uploadBytes } from '@angular/fire/storage';
-import { timeStamp } from 'console';
+
 
 
 @Injectable({

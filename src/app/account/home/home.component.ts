@@ -163,8 +163,9 @@ export class HomeComponent implements OnInit {
   }
 
   onFileUpload(event: any, selectedChat: Chat): any {
+    if (!this.loading) {
+      this.loading = true;
     const selectedFile = event.target.files[0];
-    const docType = selectedFile.type
     const selectedChatId = this.chatListControl.value[0];
     this.isNewMessage = true
     this.chatService.getFileURL(selectedFile, selectedChatId).subscribe(
@@ -174,6 +175,7 @@ export class HomeComponent implements OnInit {
           if (message && selectedChatId || fileURL && selectedChatId) {
             this.chatService.createMessages(selectedChatId, message, fileURL, this.currentUser, selectedChat, selectedFile).subscribe(() => {
               this.scrollingToBottom();
+            this.loading = false;
             });
             this.messageControl.setValue('');
           }
@@ -184,7 +186,7 @@ export class HomeComponent implements OnInit {
       }
     );
   }
-
+  }
   lastSeenMessages(selectedChat: Chat, chatId: string) {
     this.chatService.lastSeenMessages(selectedChat, chatId).subscribe();
     this.chatClose();
