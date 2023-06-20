@@ -64,14 +64,64 @@
                     <div *ngFor="let message of allMessages;index as i" class="message-container" [ngClass]="{'sender' : message.senderId === currentUser.uid}">
 
                         <div class="message-bubble">
-                            <ng-container *ngIf="message.imgURL === ''">
-                                {{message.text }}
 
-                            </ng-container>
-                            <ng-container *ngIf="message.text === ''">
-                                <a [href]="message.imgURL" target="_blank">
-                                    <img class="message-image" [src]="message.imgURL" alt="msg-images">
-                                </a>
+                            <ng-container *ngIf="message && message.docType">
+
+                                <ng-container *ngIf="message.docType.includes('text-message')">
+                                    {{message.text }}
+                                </ng-container>
+
+                                <ng-container *ngIf="message.docType.includes('image/')">
+                                    <a (click)="downloadFile(message.fileURL, message.about.name)" style="cursor: pointer">
+                                        <img class="message-image" [src]="message.fileURL" alt="msg-images">
+                                    </a>
+                                    <p>{{ truncate(message.about.name, 20)}}</p>
+                                </ng-container>
+
+                                <ng-container *ngIf="message.docType.includes('application/')">
+                                    <a (click)="downloadFile(message.fileURL, message.about.name)" style="cursor: pointer">
+                                        <img class="message-doc-image" src="/assets/media-document.png" alt="msg-images">
+                                    </a>
+                                    <p>{{ truncate(message.about.name, 20)}}</p>
+                                </ng-container>
+
+                                <ng-container *ngIf="message.docType.includes('text/')">
+                                    <a (click)="downloadFile(message.fileURL, message.about.name)" style="cursor: pointer">
+                                        <img class="message-doc-image" src="/assets/media-text-doc.png" alt="msg-images">
+                                    </a>
+                                    <p>{{ truncate(message.about.name, 20)}}</p>
+                                </ng-container>
+
+                                <ng-container *ngIf="message.docType.includes('video/')">
+                                    <video class="message-video" controls>
+                                        <source [src]="message.fileURL" type="{{message.docType}}">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                    <p>{{ message.about.name }}</p>
+                                </ng-container>
+
+                                <ng-container *ngIf="message.docType.includes('audio/')">
+                                    <audio controls>
+                                        <source [src]="message.fileURL" type="{{message.docType}}">
+                                        Your browser does not support the audio tag.
+                                    </audio>
+                                    <p>{{ message.about.name }}</p>
+                                </ng-container>
+
+                                <ng-container *ngIf="
+                                !message.docType.includes('text-message') &&
+                                !message.docType.includes('image/') && 
+                                !message.docType.includes('application/') && 
+                                !message.docType.includes('text/') &&
+                                !message.docType.includes('video/') &&
+                                !message.docType.includes('audio/')
+                                ">
+                                    <a (click)="downloadFile(message.fileURL, message.about.name)" style="cursor: pointer">
+                                        <img class="message-doc-image" src="/assets/media-no-prev.png" alt="msg-images">
+                                    </a>
+                                    <p>{{ truncate(message.about.name, 20)}}</p>
+                                </ng-container>
+
                             </ng-container>
 
                             <span class="chat-date">
@@ -114,8 +164,8 @@
                 </mat-form-field>
 
                 <button mat-icon-button>
-                    <mat-icon>image</mat-icon>
-                    <input type="file" accept="image/*" class="hidden-input" (change)="onImageSelected($event, selectedChat)">
+                    <mat-icon>attach_file</mat-icon>
+                    <input type="file" class="hidden-input" (change)="onFileUpload($event, selectedChat)">
                 </button>
             </ng-container>
         </div>

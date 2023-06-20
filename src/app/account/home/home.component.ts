@@ -5,10 +5,8 @@ import { Observable, Subject, combineLatest, of, timer } from 'rxjs';
 import { delay, map, scan, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { userProfile } from '../../interfaces/user';
 import { ChatService } from './chat.service';
-import { AuthenticationService } from '../authentication.service';
-import { Router } from '@angular/router';
 import { Chat, Message } from 'src/app/interfaces/chat';
-import { error } from 'console';
+import { saveAs } from 'file-saver';
 
 
 
@@ -23,7 +21,7 @@ export class HomeComponent implements OnInit {
   chatListControl = new FormControl('');
   messageControl = new FormControl('');
   emojiClicked: boolean = false;
-  selectedImage!: File;
+  selectedFile!: File;
   currentUser!: userProfile | null;
   selectedChat!: any;
   isTyping: boolean = false;
@@ -131,12 +129,12 @@ export class HomeComponent implements OnInit {
   sendMessage(selectedChat: Chat) {
     const message = this.messageControl.value;
     const selectedChatId = this.chatListControl.value[0];
-    const imgURL = '';
+    const fileURL = '';
     this.isNewMessage = true
 
     if (this.currentUser !== null) {
-      if (message && selectedChatId || imgURL && selectedChatId) {
-        this.chatService.createMessages(selectedChatId, message, imgURL, this.currentUser, selectedChat).subscribe(() => {
+      if (message && selectedChatId || fileURL && selectedChatId) {
+        this.chatService.createMessages(selectedChatId, message, fileURL, this.currentUser, selectedChat, this.selectedFile).subscribe(() => {
           this.scrollingToBottom();
         },
           error => {
@@ -164,16 +162,17 @@ export class HomeComponent implements OnInit {
     this.messageControl.setValue(this.messageControl.value + event.char);
   }
 
-  onImageSelected(event: any, selectedChat: Chat): any {
-    const selectedImage = event.target.files[0];
+  onFileUpload(event: any, selectedChat: Chat): any {
+    const selectedFile = event.target.files[0];
+    const docType = selectedFile.type
     const selectedChatId = this.chatListControl.value[0];
     this.isNewMessage = true
-    this.chatService.getImageURL(selectedImage, selectedChatId).subscribe(
-      imageUrl => {
+    this.chatService.getFileURL(selectedFile, selectedChatId).subscribe(
+      fileURL => {
         const message = '';
         if (this.currentUser !== null) {
-          if (message && selectedChatId || imageUrl && selectedChatId) {
-            this.chatService.createMessages(selectedChatId, message, imageUrl, this.currentUser, selectedChat).subscribe(() => {
+          if (message && selectedChatId || fileURL && selectedChatId) {
+            this.chatService.createMessages(selectedChatId, message, fileURL, this.currentUser, selectedChat, selectedFile).subscribe(() => {
               this.scrollingToBottom();
             });
             this.messageControl.setValue('');
@@ -218,4 +217,23 @@ export class HomeComponent implements OnInit {
       this.loadMoreMessages();
     }
   }
+
+  truncate(text: string, maxLength: number) {
+    if (text.length > maxLength) {
+      return text.slice(0, maxLength) + '...';
+    }
+    return text;
+  }
+
+  downloadFile(url: string, filename: string): void {
+    fetch(url)
+      .then(response => response.blob())
+      .then(blob => {
+        saveAs(blob, filename);
+      })
+      .catch(error => {
+        console.error('Error downloading file:', error);
+      });
+  }
+
 }

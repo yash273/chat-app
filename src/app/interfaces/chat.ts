@@ -23,6 +23,11 @@ export interface Message {
     text: string,
     senderId: string,
     sentDate: Date & Timestamp,
-    imgURL: string,
+    fileURL: string,
     is_seen: boolean
+    docType: string
+    about: {
+        name: string
+    }
+
 }

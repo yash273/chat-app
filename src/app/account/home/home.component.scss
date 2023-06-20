@@ -50,6 +50,8 @@ mat-list-base .mat-list-item .mat-list-avatar, .mat-list-base .mat-list-option .
 .loader{ position: fixed;z-index: 10;background: rgba(0,0,0,0.3);top:0;left:0;height: 100%;width: 100%;display: flex;align-items: center;justify-content: center;}
 .scrollToBottom{ position: absolute; z-index: 9; right: 0; top: -36px}
 .endOfChat{opacity: 0;}
+.message-doc-image{width: 100px; height: 100px;}
+.message-video{width: 400px;}
 @media (max-width:991px) { 
 
     .chat-list{width: 300px; position: fixed;top:80px;z-index: 20;left: -300px;height:100vh;}

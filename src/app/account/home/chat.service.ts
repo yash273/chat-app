@@ -70,10 +70,16 @@ export class ChatService {
     return chats
   }
 
-  createMessages(chatId: string, message: string, imgURL: string, currentUser: userProfile, selectedChat: Chat): Observable<any> {
+  createMessages(chatId: string, message: string, fileURL: string, currentUser: userProfile, selectedChat: Chat, selectedFile: any): Observable<any> {
     const ref = collection(this.fireStore, 'chats', chatId, 'messages');
     const chatRef = doc(this.fireStore, 'chats', chatId);
     const sentDate = Timestamp.fromDate(new Date());
+    let docTitle = ""
+    let docType = "text-message"
+    if (selectedFile !== undefined) {
+      docTitle = selectedFile.name
+      docType = selectedFile.type
+    }
     let status = false;
     if (selectedChat.is_chatOpen == true &&
       selectedChat.chatOpenedBy === currentUser.uid) {
@@ -86,9 +92,14 @@ export class ChatService {
         addDoc(ref, {
           text: message,
           senderId: user?.uid,
-          imgURL: imgURL,
+          fileURL: fileURL,
           sentDate: sentDate,
-          is_seen: status
+          is_seen: status,
+          docType: docType,
+          about:
+          {
+            name: docTitle
+          }
         })
       ),
       concatMap(() => updateDoc(chatRef, {
@@ -99,6 +110,8 @@ export class ChatService {
     )
 
   }
+
+
 
   lastSeenMessages(selectedChat: Chat, ChatId: string) {
     const chatRef = doc(this.fireStore, 'chats', ChatId);
@@ -151,18 +164,18 @@ export class ChatService {
     }
   }
 
-  uploadImageToStorage(imageFile: File, selectedChatId: string): Observable<any> {
-    const imageName = Date.now() + "_" + imageFile.name;
-    const filePath = `chatImages/${selectedChatId}/${imageName}`;
+  uploadFileToStorage(selectedFile: File, selectedChatId: string): Observable<any> {
+    const fileName = Date.now() + "_" + selectedFile.name;
+    const filePath = `chatImages/${selectedChatId}/${fileName}`;
     const storageRef = ref(this.storage, filePath);
-    const uploadTask = from(uploadBytes(storageRef, imageFile));
+    const uploadTask = from(uploadBytes(storageRef, selectedFile));
     return uploadTask.pipe(
       switchMap((res) => getDownloadURL(res.ref))
     )
   }
 
-  getImageURL(imageFile: File, selectedChatId: string) {
-    return this.uploadImageToStorage(imageFile, selectedChatId)
+  getFileURL(selectedFile: File, selectedChatId: string) {
+    return this.uploadFileToStorage(selectedFile, selectedChatId)
   }
 
   openChat(selectedChat: Chat, chatId: string) {
