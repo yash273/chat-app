@@ -165,27 +165,28 @@ export class HomeComponent implements OnInit {
   onFileUpload(event: any, selectedChat: Chat): any {
     if (!this.loading) {
       this.loading = true;
-    const selectedFile = event.target.files[0];
-    const selectedChatId = this.chatListControl.value[0];
-    this.isNewMessage = true
-    this.chatService.getFileURL(selectedFile, selectedChatId).subscribe(
-      fileURL => {
-        const message = '';
-        if (this.currentUser !== null) {
-          if (message && selectedChatId || fileURL && selectedChatId) {
-            this.chatService.createMessages(selectedChatId, message, fileURL, this.currentUser, selectedChat, selectedFile).subscribe(() => {
-              this.scrollingToBottom();
-            this.loading = false;
-            });
-            this.messageControl.setValue('');
+      const selectedFile = event.target.files[0];
+      const selectedChatId = this.chatListControl.value[0];
+      this.isNewMessage = true
+      this.chatService.getFileURL(selectedFile, selectedChatId).subscribe(
+        fileURL => {
+          console.log(selectedFile)
+          const message = '';
+          if (this.currentUser !== null) {
+            if (message && selectedChatId || fileURL && selectedChatId) {
+              this.chatService.createMessages(selectedChatId, message, fileURL, this.currentUser, selectedChat, selectedFile).subscribe(() => {
+                this.scrollingToBottom();
+                this.loading = false;
+              });
+              this.messageControl.setValue('');
+            }
           }
+        },
+        error => {
+          console.log(error);
         }
-      },
-      error => {
-        console.log(error);
-      }
-    );
-  }
+      );
+    }
   }
   lastSeenMessages(selectedChat: Chat, chatId: string) {
     this.chatService.lastSeenMessages(selectedChat, chatId).subscribe();
@@ -195,9 +196,15 @@ export class HomeComponent implements OnInit {
   isMessagesRead(selectedChat: Chat, chatId: string) {
     this.chatService.openChat(selectedChat, chatId).subscribe();
     if (selectedChat.is_chatOpen == true && selectedChat.chatOpenedBy === this.currentUser?.uid) {
-      this.chatService.updateIsSeenMessage(chatId)
+      if (!this.loading) {
+        this.loading = true;
+        this.chatService.updateIsSeenMessage(chatId)
+        this.loading = false;
+      }
+
     }
   }
+
 
   startTyping(selectedChat: Chat) {
     if (this.currentUser !== null) {

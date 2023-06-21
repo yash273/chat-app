@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DocumentData, Firestore, Query, Timestamp, addDoc, collection, collectionData, doc, endBefore, getDocs,  limitToLast, orderBy, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
+import { DocumentData, Firestore, Query, Timestamp, addDoc, collection, collectionData, doc, endBefore, getDocs, limit, limitToLast, orderBy, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
 import { userProfile } from '../../interfaces/user';
 import { Observable, from } from 'rxjs';
 import { UserService } from '../user.service';
@@ -79,6 +79,7 @@ export class ChatService {
     if (selectedFile !== undefined) {
       docTitle = selectedFile.name
       docType = selectedFile.type
+      console.log(docType)
     }
     let status = false;
     if (selectedChat.is_chatOpen == true &&
@@ -108,10 +109,7 @@ export class ChatService {
         lastMessageUserId: currentUser.uid,
       }))
     )
-
   }
-
-
 
   lastSeenMessages(selectedChat: Chat, ChatId: string) {
     const chatRef = doc(this.fireStore, 'chats', ChatId);
@@ -158,9 +156,9 @@ export class ChatService {
   }
 
   chatClose() {
-    if (window.screen.width <= 991) {
+    if (window.innerWidth <= 991) {
       const chatListClass = document.getElementsByClassName('chat-container')
-      chatListClass[0].classList.toggle('chatClose')
+      chatListClass[0].classList.toggle('chatClose');
     }
   }
 
@@ -191,21 +189,11 @@ export class ChatService {
     )
   }
 
-  // updateIsSeenMessage(chatId: string) {
-  //   const collectionRef = collection(this.fireStore, 'chats', chatId, 'messages');
-  //   getDocs(collectionRef).then((querySnapshot) => {
-  //     querySnapshot.forEach((doc) => {
-  //       updateDoc(doc.ref, {
-  //         is_seen: true
-  //       });
-  //     });
-  //   });
-  // }
-
   updateIsSeenMessage(chatId: string) {
     const collectionRef = collection(this.fireStore, 'chats', chatId, 'messages');
-    getDocs(collectionRef).then((querySnapshot) => {
-      querySnapshot.docs.map((doc) => {
+    const queryAll = query(collectionRef, orderBy('sentDate', 'desc'), limit(20));
+    getDocs(queryAll).then((querySnapshot) => {
+      querySnapshot.docs.forEach((doc) => {
         updateDoc(doc.ref, {
           is_seen: true
         });

@@ -63,7 +63,13 @@ mat-list-base .mat-list-item .mat-list-avatar, .mat-list-base .mat-list-option .
 }
 @media (max-width: 699px){
     .no-message-image{width: 250px;height: 250px;}
+    .message-image{width: 200px;}
+    .message-doc-image{width: 80px; height: 80px;}
+    .message-video{width: 250px;}
+    .message-audio{width: 250px;}
 }
 @media (max-width: 499px){
     .messages-section .chat-area.no-message .inner-about{flex-direction: column;}
+    .no-message-image{width: 200px;height: 200px;}
+    .message-image{width: 150px;}
 }

@@ -97,15 +97,22 @@
                                         <source [src]="message.fileURL" type="{{message.docType}}">
                                         Your browser does not support the video tag.
                                     </video>
-                                    <p>{{ message.about.name }}</p>
+                                    <p>{{ truncate(message.about.name, 20)}}</p>
                                 </ng-container>
 
                                 <ng-container *ngIf="message.docType.includes('audio/')">
-                                    <audio controls>
+                                    <audio class="message-audio" controls>
                                         <source [src]="message.fileURL" type="{{message.docType}}">
                                         Your browser does not support the audio tag.
                                     </audio>
-                                    <p>{{ message.about.name }}</p>
+                                    <p>{{ truncate(message.about.name, 20)}}</p>
+                                </ng-container>
+
+                                <ng-container *ngIf="message.docType == ''">
+                                    <a (click)="downloadFile(message.fileURL, message.about.name)" style="cursor: pointer">
+                                        <img class="message-doc-image" src="/assets/media-no-prev.png" alt="msg-images">
+                                    </a>
+                                    <p>{{ truncate(message.about.name, 20)}}</p>
                                 </ng-container>
 
                                 <ng-container *ngIf="
